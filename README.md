@@ -1,4 +1,4 @@
-# Q-Resv: Website Reservasi & Antrean Online
+#Website Reservasi & Antrean Online
 
 Aplikasi reservasi online dengan sistem nomor antrean digital yang elegan, modern, dan interaktif. Dibuat menggunakan HTML, CSS murni (Glassmorphism Dark Mode), dan JavaScript tanpa memerlukan server terpisah (serverless dengan LocalStorage).
 
