@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUA Monitor | Layar Antrean Lobby</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="display-body">
+    <!-- Background Floating Glow Blobs -->
+    <div class="glow-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="batik-bg-overlay"></div>
+    </div>
+
+    <!-- Monitor Header -->
+    <header class="display-header">
+        <a href="index.html" class="display-header-logo" title="Kembali ke Beranda">
+            <img src="assets/kemenag-logo.svg" alt="Logo Kemenag" class="logo-icon" style="height: 40px; width: auto; margin-right: 12px;">
+            <span class="logo-text">KUA <span class="badge badge-waiting" style="font-size: 0.8rem; font-weight: 700; padding: 0.3rem 0.8rem; border-radius: 30px;">Layanan Monitor</span></span>
+        </a>
+        <div class="display-header-time">
+            <span id="display-date"><i class="fa-regular fa-calendar"></i> Senin, 10 Agustus 2026</span>
+            <span class="time-separator">|</span>
+            <span id="display-clock"><i class="fa-regular fa-clock"></i> 08:00:00</span>
+        </div>
+    </header>
+
+    <!-- Monitor Main Grid Layout -->
+    <main class="display-main-grid">
+        
+        <!-- Left Side: Educational Slider -->
+        <section class="display-card edu-slider-card glass-card">
+            <div class="edu-slider-container" id="eduSlider">
+                <!-- Slide 1 -->
+                <div class="edu-slide active">
+                    <div class="edu-icon"><i class="fa-solid fa-ring"></i></div>
+                    <h3>Biaya Nikah KUA</h3>
+                    <p>Rp 0,- (GRATIS) Jika akad nikah dilaksanakan di Kantor KUA pada hari & jam kerja.</p>
+                </div>
+                <!-- Slide 2 -->
+                <div class="edu-slide">
+                    <div class="edu-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                    <h3>Biaya Nikah Luar KUA</h3>
+                    <p>Rp 600.000,- Jika akad nikah dilaksanakan di luar KUA atau di luar hari/jam kerja (Disetor via PNBP).</p>
+                </div>
+                <!-- Slide 3 -->
+                <div class="edu-slide">
+                    <div class="edu-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <h3>Syarat Pendaftaran</h3>
+                    <p>Harap siapkan dokumen N1-N4, FC KTP, KK, dan pas foto sebelum menuju loket pendaftaran.</p>
+                </div>
+            </div>
+            <div class="edu-dots" id="eduDots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </section>
+
+        <!-- Center Side: Main Call Screen -->
+        <section class="display-card main-call-card glass-card text-center">
+            <div class="call-badge"><i class="fa-solid fa-bullhorn"></i> SEDANG DIPANGGIL / NOW SERVING</div>
+            
+            <div class="display-call-box">
+                <h1 id="call-num" class="display-call-number">A-000</h1>
+            </div>
+            
+            <div class="display-name-box">
+                <p id="call-name" class="display-call-name">Mempersiapkan Antrean...</p>
+            </div>
+            
+            <div class="display-instruction-box">
+                <span class="loket-title">SILAKAN MENUJU</span>
+                <h2 class="loket-destination">LOKET LAYANAN UTAMA</h2>
+            </div>
+        </section>
+
+        <!-- Right Side: Sidebar Lists -->
+        <aside class="display-sidebar">
+            
+            <!-- Sidebar Card: Upcoming Queues -->
+            <div class="display-card sidebar-card glass-card">
+                <div class="sidebar-card-header yellow">
+                    <i class="fa-solid fa-hourglass-half"></i> ANTREAN BERIKUTNYA
+                </div>
+                <div class="sidebar-list-container">
+                    <ul id="upcoming-list" class="sidebar-list">
+                        <!-- Populated dynamically by display.js -->
+                        <li class="sidebar-list-item text-center text-muted">Menunggu antrean...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Sidebar Card: Completed Queues -->
+            <div class="display-card sidebar-card glass-card">
+                <div class="sidebar-card-header green">
+                    <i class="fa-solid fa-circle-check"></i> TELAH DILAYANI
+                </div>
+                <div class="sidebar-list-container">
+                    <ul id="completed-list" class="sidebar-list">
+                        <!-- Populated dynamically by display.js -->
+                        <li class="sidebar-list-item text-center text-muted">Belum ada antrean selesai...</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </aside>
+
+    </main>
+
+    <!-- Monitor Footer with Custom CSS Marquee -->
+    <footer class="display-footer">
+        <div class="marquee-announcement-title">
+            <i class="fa-solid fa-bullhorn"></i> INFO UTAMA
+        </div>
+        <div class="display-marquee-container">
+            <div class="display-marquee-text">
+                Selamat Datang di KUA. Silakan melakukan registrasi reservasi melalui formulir pendaftaran online. Harap tertib menunggu di ruang tunggu dan siapkan tiket antrean digital Anda. Panggilan antrean akan dibunyikan oleh petugas. Terima kasih.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Script Sheet -->
+    <script src="display.js"></script>
+</body>
+</html>

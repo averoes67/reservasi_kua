@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="12" viewBox="0 0 60 12">
+  <defs>
+    <linearGradient id="bbGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ca8a04"/>
+      <stop offset="50%" stop-color="#facc15"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+  </defs>
+  <!-- Geometric Parang / Tumpal Batik Top Border -->
+  <polygon points="0,0 15,12 30,0 45,12 60,0 60,3 45,12 30,3 15,12 0,3" fill="#16a34a" opacity="0.8"/>
+  <polygon points="15,0 30,10 45,0" fill="url(#bbGold)" opacity="0.9"/>
+  <circle cx="30" cy="5" r="1.5" fill="#fef08a"/>
+  <circle cx="0" cy="5" r="1.5" fill="#fef08a"/>
+  <circle cx="60" cy="5" r="1.5" fill="#fef08a"/>
+</svg>

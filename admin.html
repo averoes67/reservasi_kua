@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUA Admin | Kelola Antrean Online</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Floating Glow Blobs -->
+    <div class="glow-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="batik-bg-overlay"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo" title="Kembali ke Beranda">
+                <img src="assets/kemenag-logo.svg" alt="Logo Kemenag" class="logo-icon" style="height: 40px; width: auto; margin-right: 12px;">
+                <span class="logo-text">KUA <span class="badge badge-waiting" style="font-size: 0.7rem; vertical-align: middle; margin-left: 5px;">Admin</span></span>
+            </a>
+            <nav id="admin-nav" class="nav-links hidden">
+                <span class="nav-user-info"><i class="fa-regular fa-user-circle"></i> Operator</span>
+                <a href="display.html" target="_blank" class="nav-btn" style="text-decoration: none;">
+                    <i class="fa-solid fa-tv"></i> Layar Monitor
+                </a>
+                <button class="nav-btn" onclick="handleLogout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+
+        <!-- SECTION 1: ADMIN LOGIN FORM -->
+        <section id="section-login" class="page-section">
+            <div class="section-header text-center">
+                <h1>Login Portal Admin</h1>
+                <p>Silakan masuk menggunakan akun operator Anda untuk mengelola nomor antrean.</p>
+            </div>
+
+            <div class="card glass-card login-card">
+                <form id="login-form" onsubmit="handleLoginSubmit(event)">
+                    <div class="form-group">
+                        <label for="username"><i class="fa-regular fa-envelope"></i> Nama Pengguna (Username)</label>
+                        <input type="text" id="username" required placeholder="Masukkan username admin" autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password"><i class="fa-solid fa-key"></i> Kata Sandi (Password)</label>
+                        <input type="password" id="password" required placeholder="Masukkan password admin" autocomplete="current-password">
+                    </div>
+
+                    <div id="login-error-msg" class="error-text hidden">
+                        <i class="fa-solid fa-circle-exclamation"></i> Username atau password salah!
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span>Masuk Sistem</span>
+                        <i class="fa-solid fa-right-to-bracket icon-btn"></i>
+                    </button>
+                </form>
+
+                <div class="login-helper">
+                    <p><i class="fa-solid fa-circle-info"></i> <strong>Akun Demo:</strong></p>
+                    <p>Username: <code class="credential-tag">admin</code></p>
+                    <p>Password: <code class="credential-tag">admin123</code></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: ADMIN DASHBOARD PANEL (HIDDEN BY DEFAULT) -->
+        <section id="section-admin" class="page-section hidden">
+            <div class="section-header text-center">
+                <h1>Dashboard Pengelolaan Antrean</h1>
+                <p>Pantau dan kelola pendaftaran antrean secara real-time di bawah ini.</p>
+            </div>
+
+            <!-- Admin Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card glass-card">
+                    <div class="stat-icon yellow"><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Antrean</h3>
+                        <span id="stat-total" class="stat-number">0</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-icon green"><i class="fa-solid fa-circle-play"></i></div>
+                    <div class="stat-info">
+                        <h3>Sedang Melayani</h3>
+                        <span id="stat-serving" class="stat-number">-</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-card">
+                    <div class="stat-icon blue"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div class="stat-info">
+                        <h3>Menunggu</h3>
+                        <span id="stat-waiting" class="stat-number">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Main Controls and List Grid -->
+            <div class="admin-grid">
+                <!-- Now Serving Panel -->
+                <div class="card glass-card now-serving-panel text-center">
+                    <h2>PANGGILAN ANTREAN</h2>
+                    <div class="current-call-display">
+                        <span id="current-call-num">A-000</span>
+                    </div>
+                    <p id="current-call-name">Tidak ada antrean</p>
+                    <div class="call-controls">
+                        <button class="btn btn-success btn-lg" onclick="callNextQueue()">
+                            <i class="fa-solid fa-volume-high"></i> Panggil Antrean Berikutnya
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="recallCurrentQueue()">
+                            <i class="fa-solid fa-arrows-rotate"></i> Panggil Ulang
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Database Controls / Settings -->
+                <div class="card glass-card admin-controls-panel">
+                    <h2>PENGATURAN DATABASE</h2>
+                    <p class="panel-desc">Gunakan menu di bawah ini untuk mengelola database lokal antrean.</p>
+                    
+                    <div class="control-buttons">
+                        <button class="btn btn-danger" onclick="clearAllData()">
+                            <i class="fa-solid fa-trash-can"></i> Hapus Semua Data Antrean
+                        </button>
+                        <button class="btn btn-secondary" onclick="loadSampleData()">
+                            <i class="fa-solid fa-database"></i> Isi Data Sampel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Penghulu Quota Controls -->
+                <div class="card glass-card admin-controls-panel">
+                    <h2><i class="fa-solid fa-calendar-check"></i> JADWAL & KUOTA PENGHULU</h2>
+                    <p class="panel-desc">Atur sisa slot maksimal untuk layanan pendaftaran akad nikah harian KUA.</p>
+                    
+                    <div class="quota-form" style="display: flex; gap: 10px; align-items: center; margin-top: 15px;">
+                        <input type="number" id="kuotaPenghulu" class="form-control" value="5" min="0" max="20" style="width: 80px; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                        <span style="color: var(--text-dark);">Slot Nikah / Hari</span>
+                        <button class="btn btn-primary btn-sm" onclick="saveQuota()" style="margin-left: auto;">Simpan Kuota</button>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.85rem; color: var(--success);" id="quota-msg"></div>
+                </div>
+            </div>
+
+            <!-- Queue List Table Card -->
+            <div class="card glass-card table-card">
+                <div class="table-header">
+                    <h2>Daftar Reservasi Hari Ini</h2>
+                    <div class="table-filter">
+                        <label for="admin-date-filter"><i class="fa-solid fa-filter"></i> Tanggal:</label>
+                        <input type="date" id="admin-date-filter" onchange="renderAdminTable()">
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>No. Antrean</th>
+                                <th>Nama Lengkap</th>
+                                <th>No. WhatsApp</th>
+                                <th>Sesi Waktu</th>
+                                <th>Tujuan Layanan</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body">
+                            <!-- Populated dynamically by admin.js -->
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">Belum ada antrean terdaftar pada tanggal ini.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2026 KUA Admin. Dibuat dengan <i class="fa-solid fa-heart text-danger"></i> untuk Kemudahan Antrean Anda.</p>
+        <p class="footer-admin-link">
+            <a href="index.html" class="admin-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke Form Reservasi</a>
+        </p>
+    </footer>
+
+    <!-- Custom Script Sheet -->
+    <script src="admin.js"></script>
+</body>
+</html>

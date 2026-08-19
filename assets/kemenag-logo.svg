@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Pentagon background -->
+  <polygon points="50,5 95,35 77,95 23,95 5,35" fill="#16a34a" stroke="#eab308" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Star -->
+  <polygon points="50,15 54,25 65,25 56,31 59,42 50,35 41,42 44,31 35,25 46,25" fill="#facc15" stroke="#ca8a04" stroke-width="0.5"/>
+  <!-- Book -->
+  <path d="M 35 45 L 50 50 L 65 45 L 65 60 L 50 65 L 35 60 Z" fill="#facc15" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="50" y1="50" x2="50" y2="65" stroke="#fff" stroke-width="2"/>
+  <path d="M 37 47 L 48 51 M 37 51 L 48 55 M 37 55 L 48 59" stroke="#ca8a04" stroke-width="1"/>
+  <path d="M 63 47 L 52 51 M 63 51 L 52 55 M 63 55 L 52 59" stroke="#ca8a04" stroke-width="1"/>
+  <!-- Ribbon -->
+  <path d="M 15 75 Q 50 90 85 75 L 80 85 Q 50 100 20 85 Z" fill="#fff" stroke="#333" stroke-width="1"/>
+  <!-- Text -->
+  <text x="50" y="84" font-family="Arial, sans-serif" font-size="5.5" font-weight="bold" fill="#000" text-anchor="middle">IKHLAS BERAMAL</text>
+</svg>

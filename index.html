@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUA | Sistem Reservasi & Antrean Online</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background Floating Glow Blobs for Premium Aesthetics -->
+    <div class="glow-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="batik-bg-overlay"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo" onclick="event.preventDefault(); resetFormToNewBooking();"
+                title="Kembali ke Beranda">
+                <img src="assets/kemenag-logo.svg" alt="Logo Kemenag" class="logo-icon"
+                    style="height: 40px; width: auto; margin-right: 12px;">
+                <span class="logo-text">KUA</span>
+            </a>
+            <nav class="nav-links">
+                <a href="admin.html" class="nav-btn">
+                    <i class="fa-solid fa-user-gear"></i> Portal Admin
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-content">
+
+        <!-- Visual Step Flow Indicator (Global in User Page) -->
+        <div class="stepper">
+            <div class="step active" id="step-1">
+                <div class="step-num">1</div>
+                <span class="step-text">Isi Formulir</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" id="step-2">
+                <div class="step-num">2</div>
+                <span class="step-text">Terbit Tiket</span>
+            </div>
+        </div>
+
+        <!-- SECTION 1: BOOKING FORM -->
+        <section id="section-booking" class="page-section">
+            <div class="section-header text-center">
+                <h1>Ambil Nomor Antrean</h1>
+                <p>Silakan lengkapi formulir di bawah untuk mendapatkan nomor antrean digital Anda secara instan.</p>
+            </div>
+
+            <div class="card glass-card">
+                <form id="reservation-form" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label for="fullName"><i class="fa-regular fa-user"></i> Nama Lengkap</label>
+                        <input type="text" id="fullName" required placeholder="Masukkan nama lengkap Anda"
+                            autocomplete="off">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phoneNumber"><i class="fa-brands fa-whatsapp"></i> Nomor WhatsApp</label>
+                            <input type="tel" id="phoneNumber" required placeholder="Contoh: 081234567890"
+                                pattern="^08[0-9]{8,11}$"
+                                title="Harap masukkan nomor WhatsApp aktif diawali dengan angka 08 (minimal 10 digit, maksimal 13 digit)"
+                                autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="reserveDate"><i class="fa-regular fa-calendar"></i> Tanggal Kunjungan</label>
+                            <input type="date" id="reserveDate" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="timeSlot"><i class="fa-regular fa-clock"></i> Sesi Waktu</label>
+                            <select id="timeSlot" required>
+                                <option value="" disabled selected>Pilih sesi waktu...</option>
+                                <option value="Sesi Pagi (08:00 - 11:00)">Sesi Pagi (08:00 - 11:00)</option>
+                                <option value="Sesi Siang (13:00 - 16:00)">Sesi Siang (13:00 - 16:00)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="purpose"><i class="fa-solid fa-list-check"></i> Tujuan Layanan</label>
+                            <select id="purpose" required onchange="handlePurposeChange(this)">
+                                <option value="" disabled selected>Pilih keperluan...</option>
+                                <option value="Pendaftaran Nikah / Rujuk">Pendaftaran Nikah / Rujuk</option>
+                                <option value="Rekomendasi Nikah (Numpang Nikah)">Rekomendasi Nikah (Numpang Nikah)
+                                </option>
+                                <option value="Konsultasi Keluarga & Syariah">Konsultasi Keluarga & Syariah</option>
+                                <option value="Legalisir & Pengambilan Buku Nikah">Legalisir & Pengambilan Buku Nikah
+                                </option>
+                                <option value="Lainnya">Lainnya (Ketik Sendiri...)</option>
+                            </select>
+                        </div>
+                        <div class="form-group hidden" id="custom-purpose-group">
+                            <label for="customPurpose"><i class="fa-regular fa-pen-to-square"></i> Tulis Keperluan
+                                Lainnya</label>
+                            <input type="text" id="customPurpose" placeholder="Tulis keperluan Anda di sini..."
+                                autocomplete="off">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <span>Dapatkan Nomor Antrean</span>
+                        <i class="fa-solid fa-arrow-right-long icon-btn"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- SECTION 2: DIGITAL TICKET -->
+        <section id="section-ticket" class="page-section hidden">
+            <div class="section-header text-center">
+                <div class="success-icon-wrapper">
+                    <i class="fa-solid fa-circle-check success-glow-icon"></i>
+                </div>
+                <h1>Pendaftaran Berhasil!</h1>
+                <p>Tiket antrean digital Anda telah diterbitkan. Simpan tiket ini untuk verifikasi saat kedatangan.</p>
+            </div>
+
+            <!-- The Ticket Container (Boarding Pass Style) -->
+            <div class="ticket-wrapper">
+                <div class="ticket glass-card" id="digital-ticket">
+                    <!-- Ticket Top Decorator -->
+                    <div class="ticket-header">
+                        <div class="ticket-logo">
+                            <i class="fa-solid fa-mosque"></i> KUA
+                        </div>
+                        <div class="ticket-status-badge">Menunggu</div>
+                    </div>
+
+                    <!-- Ticket Main Body -->
+                    <div class="ticket-body">
+                        <div class="ticket-main-queue">
+                            <p class="queue-label">NOMOR ANTREAN</p>
+                            <h2 id="ticket-queue-number" class="queue-number">A-000</h2>
+                        </div>
+
+                        <div class="ticket-divider">
+                            <div class="divider-notch left"></div>
+                            <div class="divider-line"></div>
+                            <div class="divider-notch right"></div>
+                        </div>
+
+                        <div class="ticket-details">
+                            <div class="detail-row">
+                                <div class="detail-col">
+                                    <span class="detail-label">NAMA LENGKAP</span>
+                                    <span id="ticket-name" class="detail-value">-</span>
+                                </div>
+                                <div class="detail-col text-right">
+                                    <span class="detail-label">LAYANAN</span>
+                                    <span id="ticket-purpose" class="detail-value">-</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-row">
+                                <div class="detail-col">
+                                    <span class="detail-label">TANGGAL KUNJUNGAN</span>
+                                    <span id="ticket-date" class="detail-value">-</span>
+                                </div>
+                                <div class="detail-col text-right">
+                                    <span class="detail-label">SESI WAKTU</span>
+                                    <span id="ticket-time" class="detail-value">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Footer with Barcode -->
+                    <div class="ticket-footer">
+                        <div class="barcode-container">
+                            <canvas id="barcode-canvas" width="280" height="60"></canvas>
+                        </div>
+                        <p class="ticket-note">*Harap datang 15 menit sebelum sesi dimulai</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons for Ticket -->
+            <div class="ticket-actions">
+                <button class="btn btn-secondary" onclick="downloadTicket()">
+                    <i class="fa-solid fa-download"></i> Unduh Tiket (PNG)
+                </button>
+                <button class="btn btn-success" onclick="shareToWhatsApp()">
+                    <i class="fa-brands fa-whatsapp"></i> Kirim ke WhatsApp
+                </button>
+                <button class="btn btn-primary" onclick="resetFormToNewBooking()">
+                    <i class="fa-solid fa-plus"></i> Reservasi Baru
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2026 KUA. Dibuat dengan <i class="fa-solid fa-heart text-danger"></i> untuk Kemudahan Antrean Anda.
+        </p>
+        <p class="footer-admin-link">
+            <a href="admin.html" class="admin-link"><i class="fa-solid fa-lock"></i> Portal Login Admin</a>
+            <span class="text-muted" style="margin: 0 0.5rem;">|</span>
+            <a href="display.html" target="_blank" class="admin-link"><i class="fa-solid fa-tv"></i> Layar Monitor
+                Lobby</a>
+        </p>
+    </footer>
+
+    <!-- Requirements Modal -->
+    <div id="requirementsModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-file-circle-check"></i> Persyaratan Layanan</h3>
+                <button type="button" class="close-btn" onclick="closeRequirementsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="requirementsText">Silakan lengkapi dokumen persyaratan berikut sebelum mendatangi kantor KUA.</p>
+                <ul id="requirementsList" class="req-list">
+                    <!-- Requirements injected via JS -->
+                </ul>
+                <div class="req-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Pastikan seluruh dokumen dibawa saat sesi
+                    kunjungan.
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align: right;">
+                <button type="button" class="btn btn-primary" onclick="closeRequirementsModal()"
+                    style="padding: 0.5rem 1.5rem;">Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML Canvas Helper for Ticket Export (Invisible) -->
+    <canvas id="export-canvas" width="600" height="850" class="hidden-canvas"></canvas>
+
+    <!-- Custom Script Sheet -->
+    <script src="app.js"></script>
+</body>
+
+</html>
