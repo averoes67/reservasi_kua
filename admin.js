@@ -198,12 +198,17 @@ function callTargetQueue(id) {
     res.status = 'serving';
     saveReservations(reservations);
     
+    // Broadcast call event to display.html
+    localStorage.setItem('lastCalledTicket', JSON.stringify({
+        id: res.id,
+        queue_number: res.queue_number,
+        full_name: res.full_name,
+        timestamp: Date.now()
+    }));
+    
     // Redraw table and stats
     renderAdminTable();
     updateAdminStats();
-    
-    // Trigger Indonesian Text-to-Speech
-    voiceOutQueue(res.queue_number, res.full_name);
 }
 
 // Call next waiting queue
@@ -235,7 +240,13 @@ function recallCurrentQueue() {
     const servingRes = reservations.find(r => r.reservation_date === filterDate && r.status === 'serving');
     
     if (servingRes) {
-        voiceOutQueue(servingRes.queue_number, servingRes.full_name);
+        // Broadcast call event to display.html
+        localStorage.setItem('lastCalledTicket', JSON.stringify({
+            id: servingRes.id,
+            queue_number: servingRes.queue_number,
+            full_name: servingRes.full_name,
+            timestamp: Date.now()
+        }));
     } else {
         alert('Tidak ada antrean aktif yang sedang dilayani untuk dipanggil.');
     }

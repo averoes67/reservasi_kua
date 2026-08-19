@@ -14,7 +14,7 @@
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style Sheet -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=11">
 </head>
 
 <body>
@@ -103,9 +103,13 @@
                                 <option value="Pendaftaran Nikah / Rujuk">Pendaftaran Nikah / Rujuk</option>
                                 <option value="Rekomendasi Nikah (Numpang Nikah)">Rekomendasi Nikah (Numpang Nikah)
                                 </option>
+                                <option value="Pembuatan Duplikat Buku Nikah">Pembuatan Duplikat Buku Nikah</option>
+                                <option value="Bimbingan Perkawinan (Bimwin)">Bimbingan Perkawinan (Bimwin)</option>
                                 <option value="Konsultasi Keluarga & Syariah">Konsultasi Keluarga & Syariah</option>
                                 <option value="Legalisir & Pengambilan Buku Nikah">Legalisir & Pengambilan Buku Nikah
                                 </option>
+                                <option value="Pendaftaran Ikrar Wakaf">Pendaftaran Ikrar Wakaf</option>
+                                <option value="Pembinaan Mualaf / Masuk Islam">Pembinaan Mualaf / Masuk Islam</option>
                                 <option value="Lainnya">Lainnya (Ketik Sendiri...)</option>
                             </select>
                         </div>
@@ -245,13 +249,41 @@
                     style="padding: 0.5rem 1.5rem;">Saya Mengerti</button>
             </div>
         </div>
-    </div>
+        <!-- Mobile Helper Save Image Modal -->
+        <div id="ticketImageModal" class="modal-overlay hidden">
+            <div class="modal-content" style="max-width: 460px; text-align: center;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-mobile-screen-button"></i> Unduh Tiket Antrean</h3>
+                    <button type="button" class="close-btn" onclick="closeTicketImageModal()">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 1.25rem;">
+                    <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-main);">
+                        <strong>📱 Untuk Pengguna HP / Smartphone:</strong><br>
+                        Tekan dan tahan gambar tiket di bawah ini, lalu pilih <em>"Simpan Gambar"</em> atau
+                        <em>"Download Gambar"</em> untuk menyimpan ke Galeri HP Anda.
+                    </p>
+                    <div
+                        style="border-radius: 16px; overflow: hidden; border: 2px solid var(--primary); box-shadow: 0 8px 24px rgba(0,0,0,0.12); margin-bottom: 1rem;">
+                        <img id="ticket-preview-img" src="" alt="Pratinjau Tiket Digital"
+                            style="width: 100%; height: auto; display: block;">
+                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                    <a id="ticket-preview-open-link" href="#" target="_blank" class="btn btn-secondary"
+                        style="font-size: 0.85rem; padding: 0.5rem 1rem; text-decoration: none;">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Gambar
+                    </a>
+                    <button type="button" class="btn btn-primary" onclick="closeTicketImageModal()"
+                        style="font-size: 0.85rem; padding: 0.5rem 1.25rem;">Selesai</button>
+                </div>
+            </div>
+        </div>
 
-    <!-- HTML Canvas Helper for Ticket Export (Invisible) -->
-    <canvas id="export-canvas" width="600" height="850" class="hidden-canvas"></canvas>
+        <!-- HTML Canvas Helper for Ticket Export (Invisible) -->
+        <canvas id="export-canvas" width="600" height="850" class="hidden-canvas"></canvas>
 
-    <!-- Custom Script Sheet -->
-    <script src="app.js"></script>
+        <!-- Custom Script Sheet -->
+        <script src="app.js?v=9"></script>
 </body>
 
 </html>

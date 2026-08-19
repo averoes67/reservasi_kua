@@ -26,11 +26,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Initial Data Load
     syncData();
 
-    // 3. Storage Event Listener
-    // Whenever admin changes database in another tab, this triggers immediately
+    // 3. Storage Event Listener for real-time call broadcasts
     window.addEventListener('storage', (e) => {
         if (e.key === 'reservations') {
             syncData();
+        }
+        if (e.key === 'lastCalledTicket') {
+            try {
+                const data = JSON.parse(e.newValue);
+                if (data && data.queue_number) {
+                    syncData();
+                    triggerCallNotification(data.queue_number, data.full_name);
+                }
+            } catch (err) {
+                console.error('Failed to parse call broadcast', err);
+            }
         }
     });
 

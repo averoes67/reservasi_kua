@@ -23,7 +23,69 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('reservations')) {
         localStorage.setItem('reservations', JSON.stringify([]));
     }
+    
+    // Inisialisasi Custom Select (Dropdown dengan scroll)
+    initializeCustomSelects();
 });
+
+// Custom Select Implementation
+function initializeCustomSelects() {
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) return;
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        
+        select.style.display = 'none';
+        
+        const trigger = document.createElement('div');
+        trigger.className = 'custom-select-trigger';
+        const selectedOption = select.options[select.selectedIndex];
+        trigger.innerHTML = `<span>${selectedOption ? selectedOption.text : 'Pilih...'}</span><i class="fa-solid fa-chevron-down"></i>`;
+        
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'custom-select-options';
+        
+        Array.from(select.options).forEach(option => {
+            if (option.disabled && option.value === '') return;
+            
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'custom-select-option';
+            optionDiv.innerText = option.text;
+            optionDiv.dataset.value = option.value;
+            
+            optionDiv.addEventListener('click', () => {
+                select.value = option.value;
+                const event = new Event('change');
+                select.dispatchEvent(event);
+                
+                trigger.querySelector('span').innerText = option.text;
+                wrapper.classList.remove('open');
+            });
+            
+            optionsContainer.appendChild(optionDiv);
+        });
+        
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(optionsContainer);
+        select.parentNode.insertBefore(wrapper, select.nextSibling);
+        
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.custom-select-wrapper').forEach(w => {
+                if (w !== wrapper) w.classList.remove('open');
+            });
+            wrapper.classList.toggle('open');
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select-wrapper').forEach(w => {
+            w.classList.remove('open');
+        });
+    });
+}
 
 // Helper: Get reservations array from LocalStorage
 function getReservations() {
@@ -346,12 +408,82 @@ function downloadTicket() {
     ctx.font = '12px Inter, sans-serif';
     ctx.fillText('Tunjukkan tiket digital ini kepada petugas di loket.', width / 2, 755);
     
-    // Trigger download
+    // Trigger download optimized for Mobile & Desktop
+    if (canvas.toBlob) {
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                fallbackDownloadDataURL(canvas, `Tiket-Antrian-${currentActiveTicket.queue_number}.png`);
+                return;
+            }
+
+            const fileName = `Tiket-Antrian-${currentActiveTicket.queue_number}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
+
+            // 1. Try Mobile Web Share API first if supported with files
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    title: `Tiket Antrean ${currentActiveTicket.queue_number}`,
+                    text: `Tiket Antrean Digital KUA ${currentActiveTicket.queue_number} atas nama ${currentActiveTicket.full_name}`,
+                    files: [file]
+                }).catch(() => {
+                    triggerBlobDownload(blob, fileName);
+                });
+                return;
+            }
+
+            // 2. Blob Download for Mobile & Desktop
+            triggerBlobDownload(blob, fileName);
+        }, 'image/png');
+    } else {
+        fallbackDownloadDataURL(canvas, `Tiket-Antrian-${currentActiveTicket.queue_number}.png`);
+    }
+}
+
+// Trigger Blob File Download
+function triggerBlobDownload(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Show Mobile Save Modal Helper
+    showMobileSaveImageModal(url);
+}
+
+// Fallback Data URL Download
+function fallbackDownloadDataURL(canvas, fileName) {
     const dataURL = canvas.toDataURL('image/png');
     const link = document.createElement('a');
-    link.download = `Tiket-Antrian-${currentActiveTicket.queue_number}.png`;
     link.href = dataURL;
+    link.download = fileName;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+
+    showMobileSaveImageModal(dataURL);
+}
+
+// Show helper modal for saving image on mobile devices
+function showMobileSaveImageModal(imgSrc) {
+    const modal = document.getElementById('ticketImageModal');
+    const imgEl = document.getElementById('ticket-preview-img');
+    const linkEl = document.getElementById('ticket-preview-open-link');
+
+    if (modal && imgEl) {
+        imgEl.src = imgSrc;
+        if (linkEl) linkEl.href = imgSrc;
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeTicketImageModal() {
+    const modal = document.getElementById('ticketImageModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
 }
 
 // Redirect and share details on WhatsApp
@@ -381,17 +513,31 @@ _Harap datang 15 menit sebelum sesi dimulai. Terima kasih._`;
 // Define specific requirements for each KUA service
 const kuaRequirements = {
     'Pendaftaran Nikah / Rujuk': [
-        'Fotokopi KTP dan KK Calon Suami & Istri',
-        'Fotokopi KTP dan KK Orang Tua / Wali',
-        'Surat Pengantar dari Kelurahan (Model N1 - N4)',
-        'Akta Cerai / Surat Kematian (jika berstatus Janda/Duda)',
-        'Pas Foto 2x3 dan 4x6 (Masing-masing 4 lembar, background biru)'
+        'Surat Pengantar Nikah dari Kepala Desa / Kelurahan (Model N1 - N4)',
+        'Fotokopi KTP Calon Suami (CAMI), Calon Istri (CATRI), dan Orang Tua CAMI-CATRI',
+        'Fotokopi Kartu Keluarga (KK) CAMI & CATRI',
+        'Fotokopi Akta Kelahiran dan Ijazah Terakhir',
+        'Pasfoto ukuran 2x3 masing-masing 6 lembar (Background Biru)',
+        'Fotokopi KTP 2 orang saksi dalam pernikahan',
+        'Surat Rekomendasi Nikah (Bagi CAMI/CATRI dari luar kecamatan)',
+        'Nomor HP (WhatsApp) dan Email masing-masing CAMI-CATRI',
+        'Akta Cerai dari Pengadilan Agama (Jika Cerai Hidup)',
+        'Akta Kematian dari Disdukcapil (Jika Cerai Mati)',
+        'Surat Pernyataan Belum Pernah Menikah',
+        'Surat Layak Kawin / Hasil Lab dari Dinas Kesehatan (Puskesmas)',
+        'Surat Keterangan Belum Nikah (Jejaka / Perawan / Janda / Duda)'
     ],
     'Rekomendasi Nikah (Numpang Nikah)': [
-        'Fotokopi KTP dan KK Pemohon',
-        'Surat Pengantar RT/RW setempat',
-        'Surat Keterangan Belum Menikah dari Kelurahan',
-        'Fotokopi KTP Calon Pasangan'
+        'Surat pengantar dari RT dan RW setempat.',
+        'Formulir surat pengantar nikah dari kelurahan/desa (Model N1, N2, N4, dan N5).',
+        'Fotokopi KTP dan Kartu Keluarga (KK) calon pengantin.',
+        'Fotokopi Akta Kelahiran dan Ijazah terakhir.',
+        'Fotokopi KTP orang tua atau wali.',
+        'Surat pernyataan belum pernah menikah (jejaka/perawan) bermeterai Rp10.000.',
+        'Pas foto latar belakang warna biru (ukuran 2x3 dan 3x4).',
+        '[Tambahan] Akta Cerai asli (cerai hidup) atau Akta Kematian (cerai mati).',
+        '[Tambahan] Surat izin komandan/atasan (bagi anggota TNI/POLRI).',
+        '[Tambahan] Surat izin orang tua (di bawah 21 th) / dispensasi PA (di bawah 19 th).'
     ],
     'Konsultasi Keluarga & Syariah': [
         'Kartu Identitas (KTP) Asli',
@@ -402,6 +548,28 @@ const kuaRequirements = {
         'Buku Nikah Asli (untuk Legalisir)',
         'Fotokopi Buku Nikah maksimal 5 rangkap',
         'KTP Asli / Surat Kuasa bermaterai (jika diwakilkan)'
+    ],
+    'Pembuatan Duplikat Buku Nikah': [
+        'Surat Keterangan Kehilangan dari Kepolisian Asli',
+        'Fotokopi KTP dan Kartu Keluarga (KK)',
+        'Fotokopi Buku Nikah yang hilang (jika ada)',
+        'Pas foto latar belakang biru ukuran 2x3 (2 lembar)'
+    ],
+    'Bimbingan Perkawinan (Bimwin)': [
+        'Bukti Pendaftaran Nikah dari KUA',
+        'Fotokopi KTP Calon Suami dan Calon Istri'
+    ],
+    'Pendaftaran Ikrar Wakaf': [
+        'Sertifikat Tanah Asli / Girik / Surat Kepemilikan Tanah',
+        'Fotokopi KTP Wakif (Pemberi Wakaf) dan Nadzir (Penerima Wakaf)',
+        'Fotokopi KTP 2 orang Saksi',
+        'Surat Keterangan dari Kepala Desa/Kelurahan setempat'
+    ],
+    'Pembinaan Mualaf / Masuk Islam': [
+        'Fotokopi KTP / Identitas Diri Asli',
+        'Surat Pengantar dari RT/RW setempat',
+        'Pas foto latar bebas ukuran 3x4 (3 lembar)',
+        'Membawa Materai Rp10.000 (2 lembar)'
     ]
 };
 
@@ -423,18 +591,42 @@ function handlePurposeChange(selectObj) {
             
             // Show requirements modal if service has specific requirements
             if (kuaRequirements[selectedValue]) {
-                showRequirementsModal(kuaRequirements[selectedValue]);
+                showRequirementsModal(selectedValue, kuaRequirements[selectedValue]);
             }
         }
     }
 }
 
-function showRequirementsModal(requirements) {
+function showRequirementsModal(purposeName, requirements) {
     const modal = document.getElementById('requirementsModal');
     const reqList = document.getElementById('requirementsList');
-    
+    const reqText = document.getElementById('requirementsText');
+    const modalHeaderTitle = document.querySelector('#requirementsModal .modal-header h3');
+
     if (modal && reqList) {
-        reqList.innerHTML = requirements.map(req => `<li><i class="fa-solid fa-circle-check text-primary" style="margin-right: 8px;"></i>${req}</li>`).join('');
+        if (purposeName === 'Pendaftaran Nikah / Rujuk') {
+            if (modalHeaderTitle) {
+                modalHeaderTitle.innerHTML = `<i class="fa-solid fa-file-circle-check text-primary"></i> Persyaratan Nikah (PMA No. 30/2024)`;
+            }
+            if (reqText) {
+                reqText.innerHTML = `<strong>Persyaratan Pendaftaran Kehendak Nikah berdasarkan PMA No 30 Tahun 2024:</strong><br><span class="text-muted" style="font-size: 0.85rem;">Harap siapkan dan bawa berkas berikut saat kunjungan ke KUA:</span>`;
+            }
+        } else {
+            if (modalHeaderTitle) {
+                modalHeaderTitle.innerHTML = `<i class="fa-solid fa-file-circle-check text-primary"></i> Persyaratan Layanan`;
+            }
+            if (reqText) {
+                reqText.innerText = `Silakan lengkapi dokumen persyaratan berikut sebelum mendatangi kantor KUA:`;
+            }
+        }
+
+        reqList.innerHTML = requirements.map((req, idx) => 
+            `<li>
+                <span class="req-num">${idx + 1}.</span>
+                <span>${req}</span>
+            </li>`
+        ).join('');
+
         modal.classList.remove('hidden');
     }
 }
@@ -471,6 +663,18 @@ function resetFormToNewBooking() {
         customInput.required = false;
         customInput.value = '';
     }
+    
+    // Update custom selects UI
+    document.querySelectorAll('select').forEach(select => {
+        const wrapper = select.nextElementSibling;
+        if (wrapper && wrapper.classList.contains('custom-select-wrapper')) {
+            const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
+            const selectedOpt = select.options[select.selectedIndex];
+            if (triggerSpan && selectedOpt) {
+                triggerSpan.innerText = selectedOpt.text;
+            }
+        }
+    });
     
     // Switch views
     const sectionTicket = document.getElementById('section-ticket');
