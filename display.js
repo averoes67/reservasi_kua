@@ -1,55 +1,32 @@
 /* ==========================================================================
    DISPLAY MONITOR JAVASCRIPT - display.js
-   Logic for real-time storage event listeners, Web Audio chimes, 
+   Logic for real-time API polling, Web Audio chimes, 
    Clock date updates, and Indonesian Text-to-Speech call triggering
    ========================================================================== */
 
-let lastCalledId = null;
+let lastCalledTicketNum = null;
 let currentFilterDate = '';
+let reservationsCache = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Clock & Date Initialization
     startClock();
     
-    // Set default date filter to today (equivalent to what's checked in other files)
+    // Set default date filter to today
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     currentFilterDate = `${yyyy}-${mm}-${dd}`;
 
-    // Initialize Database local data checking
-    if (!localStorage.getItem('reservations')) {
-        localStorage.setItem('reservations', JSON.stringify([]));
-    }
-
     // 2. Initial Data Load
     syncData();
 
-    // 3. Storage Event Listener for real-time call broadcasts
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'reservations') {
-            syncData();
-        }
-        if (e.key === 'lastCalledTicket') {
-            try {
-                const data = JSON.parse(e.newValue);
-                if (data && data.queue_number) {
-                    syncData();
-                    triggerCallNotification(data.queue_number, data.full_name);
-                }
-            } catch (err) {
-                console.error('Failed to parse call broadcast', err);
-            }
-        }
-    });
-
-    // 4. Polling Fallback (in case storage event is delayed or tabs run in same process context)
-    setInterval(syncData, 1000);
+    // 3. Polling the Cloudflare API every 2.5 seconds
+    setInterval(syncData, 2500);
 
     // Audio init listener (browser blocks web audio until first user interaction)
     document.body.addEventListener('click', () => {
-        // Trigger a silent AudioContext init on click to unlock audio for browser
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
             const ctx = new AudioContext();
@@ -71,8 +48,6 @@ function startClock() {
 
     function update() {
         const now = new Date();
-        
-        // Format Time (00:00:00)
         const hrs = String(now.getHours()).padStart(2, '0');
         const mins = String(now.getMinutes()).padStart(2, '0');
         const secs = String(now.getSeconds()).padStart(2, '0');
@@ -80,7 +55,6 @@ function startClock() {
             clockEl.innerHTML = `<i class="fa-regular fa-clock"></i> ${hrs}:${mins}:${secs}`;
         }
         
-        // Format Date (Day, DD Month YYYY)
         const dayName = days[now.getDay()];
         const dateNum = now.getDate();
         const monthName = months[now.getMonth()];
@@ -94,42 +68,48 @@ function startClock() {
     setInterval(update, 1000);
 }
 
-// Helper: Get data from LocalStorage
-function getReservations() {
-    return JSON.parse(localStorage.getItem('reservations')) || [];
-}
-
-// 2. Data Synchronization & Call Trigger
-function syncData() {
-    const reservations = getReservations();
-    
-    // Find serving queue for today
-    const todayReservations = reservations.filter(r => r.reservation_date === currentFilterDate);
-    const servingQueue = todayReservations.find(r => r.status === 'serving');
-    
-    const callNumEl = document.getElementById('call-num');
-    const callNameEl = document.getElementById('call-name');
-    
-    if (servingQueue) {
-        // If there's a new call that hasn't been triggered on this screen
-        if (lastCalledId !== servingQueue.id) {
-            lastCalledId = servingQueue.id;
+// 2. Data Synchronization & Call Trigger via API
+async function syncData() {
+    try {
+        // Fetch all reservations for the sidebar
+        const resResponse = await fetch('/api/reservations');
+        if (resResponse.ok) {
+            reservationsCache = await resResponse.json();
+            const todayReservations = reservationsCache.filter(r => r.reserve_date === currentFilterDate);
+            updateSidebarLists(todayReservations);
             
-            // Update Text Displays
-            if (callNumEl) callNumEl.innerText = servingQueue.queue_number;
-            if (callNameEl) callNameEl.innerText = servingQueue.full_name;
-            
-            // Trigger Visual Animation Chimes & TTS
-            triggerCallNotification(servingQueue.queue_number, servingQueue.full_name);
+            // Fetch queue state for active display
+            const queueResponse = await fetch('/api/queue');
+            if (queueResponse.ok) {
+                const queueState = await queueResponse.json();
+                
+                const callNumEl = document.getElementById('call-num');
+                const callNameEl = document.getElementById('call-name');
+                
+                if (queueState.last_called_ticket) {
+                    const ticketNum = queueState.last_called_ticket;
+                    // Find name
+                    const servingQueue = todayReservations.find(r => r.ticket_number === ticketNum);
+                    const name = servingQueue ? servingQueue.full_name : 'Pemohon';
+                    
+                    if (lastCalledTicketNum !== ticketNum) {
+                        lastCalledTicketNum = ticketNum;
+                        
+                        if (callNumEl) callNumEl.innerText = ticketNum;
+                        if (callNameEl) callNameEl.innerText = name;
+                        
+                        triggerCallNotification(ticketNum, name);
+                    }
+                } else {
+                    lastCalledTicketNum = null;
+                    if (callNumEl) callNumEl.innerText = 'A-000';
+                    if (callNameEl) callNameEl.innerText = 'Mempersiapkan Antrean...';
+                }
+            }
         }
-    } else {
-        lastCalledId = null;
-        if (callNumEl) callNumEl.innerText = 'A-000';
-        if (callNameEl) callNameEl.innerText = 'Mempersiapkan Antrean...';
+    } catch (e) {
+        // Silent catch for API polling
     }
-    
-    // Update Sidebar Lists
-    updateSidebarLists(todayReservations);
 }
 
 // 3. Play sound chimes (Ding-Dong) using Web Audio API
@@ -145,17 +125,17 @@ function playChimeTone() {
     osc1.connect(gain1);
     gain1.connect(ctx.destination);
     
-    osc1.type = 'triangle'; // Soft premium sound compared to 'sine' or 'sawtooth'
+    osc1.type = 'triangle'; 
     osc1.frequency.setValueAtTime(659.25, ctx.currentTime);
     
     gain1.gain.setValueAtTime(0, ctx.currentTime);
-    gain1.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.05); // Fade in
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45); // Fade out
+    gain1.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
     
     osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.45);
+    osc1.stop(ctx.currentTime + 0.6);
     
-    // Play Note 2: C5 (523.25 Hz) after 0.35s delay
+    // Play Note 2: C5 (523.25 Hz)
     const osc2 = ctx.createOscillator();
     const gain2 = ctx.createGain();
     osc2.connect(gain2);
@@ -165,8 +145,8 @@ function playChimeTone() {
     osc2.frequency.setValueAtTime(523.25, ctx.currentTime + 0.35);
     
     gain2.gain.setValueAtTime(0, ctx.currentTime + 0.35);
-    gain2.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.4); // Fade in
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.95); // Fade out
+    gain2.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.4); 
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.95);
     
     osc2.start(ctx.currentTime + 0.35);
     osc2.stop(ctx.currentTime + 0.95);
@@ -176,10 +156,8 @@ function playChimeTone() {
 function speakQueueCall(queueNumber, name) {
     if (!('speechSynthesis' in window)) return;
     
-    // Cancel ongoing talks
     window.speechSynthesis.cancel();
     
-    // Convert 'A-002' to 'A, nol, nol, dua'
     const rawNum = queueNumber.split('-')[1];
     const spokenDigits = rawNum.split('').map(digit => {
         if (digit === '0') return 'nol';
@@ -190,10 +168,9 @@ function speakQueueCall(queueNumber, name) {
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'id-ID';
-    utterance.rate = 0.85; // Natural speed
+    utterance.rate = 0.85; 
     utterance.pitch = 1.0;
     
-    // Find Indonesian local voice
     const voices = window.speechSynthesis.getVoices();
     const idVoice = voices.find(voice => voice.lang.includes('id') || voice.lang.includes('ID'));
     if (idVoice) {
@@ -203,20 +180,16 @@ function speakQueueCall(queueNumber, name) {
     window.speechSynthesis.speak(utterance);
 }
 
-// Trigger Notifications (visual animation, sound chime, then voice)
 function triggerCallNotification(queueNumber, name) {
-    // Visual Alert Effect
     const mainCard = document.querySelector('.main-call-card');
     if (mainCard) {
         mainCard.classList.remove('pulse-alert');
-        void mainCard.offsetWidth; // Trigger reflow for CSS keyframe animation restart
+        void mainCard.offsetWidth; 
         mainCard.classList.add('pulse-alert');
     }
     
-    // 1. Play Chime sound
     playChimeTone();
     
-    // 2. Play TTS Voice after chime finished (950ms delay)
     setTimeout(() => {
         speakQueueCall(queueNumber, name);
     }, 950);
@@ -224,13 +197,13 @@ function triggerCallNotification(queueNumber, name) {
 
 // 5. Sidebar Lists Render (Upcoming & Completed)
 function updateSidebarLists(todayReservations) {
-    // 1. Upcoming list (status: waiting, sorted ascending)
+    // Upcoming list
     const upcomingListEl = document.getElementById('upcoming-list');
     const waitingList = todayReservations
-        .filter(r => r.status === 'waiting')
+        .filter(r => r.status.toLowerCase() === 'menunggu')
         .sort((a, b) => {
-            const numA = parseInt(a.queue_number.split('-')[1]);
-            const numB = parseInt(b.queue_number.split('-')[1]);
+            const numA = parseInt(a.ticket_number.split('-')[1]);
+            const numB = parseInt(b.ticket_number.split('-')[1]);
             return numA - numB;
         });
 
@@ -239,12 +212,11 @@ function updateSidebarLists(todayReservations) {
         if (waitingList.length === 0) {
             upcomingListEl.innerHTML = '<li class="sidebar-list-item text-center text-muted">Tidak ada antrean tunggu</li>';
         } else {
-            // Take up to 4 items
             waitingList.slice(0, 4).forEach(res => {
                 const li = document.createElement('li');
                 li.className = 'sidebar-list-item';
                 li.innerHTML = `
-                    <span class="sidebar-item-num">${res.queue_number}</span>
+                    <span class="sidebar-item-num">${res.ticket_number}</span>
                     <span class="sidebar-item-name">${res.full_name}</span>
                 `;
                 upcomingListEl.appendChild(li);
@@ -252,14 +224,14 @@ function updateSidebarLists(todayReservations) {
         }
     }
 
-    // 2. Completed list (status: completed, sorted descending by created_at or number)
+    // Completed list
     const completedListEl = document.getElementById('completed-list');
     const completedList = todayReservations
-        .filter(r => r.status === 'completed')
+        .filter(r => r.status.toLowerCase() === 'selesai')
         .sort((a, b) => {
-            const numA = parseInt(a.queue_number.split('-')[1]);
-            const numB = parseInt(b.queue_number.split('-')[1]);
-            return numB - numA; // Descending order (latest completed first)
+            const numA = parseInt(a.ticket_number.split('-')[1]);
+            const numB = parseInt(b.ticket_number.split('-')[1]);
+            return numB - numA; 
         });
 
     if (completedListEl) {
@@ -267,12 +239,11 @@ function updateSidebarLists(todayReservations) {
         if (completedList.length === 0) {
             completedListEl.innerHTML = '<li class="sidebar-list-item text-center text-muted">Belum ada antrean selesai</li>';
         } else {
-            // Take up to 4 items
             completedList.slice(0, 4).forEach(res => {
                 const li = document.createElement('li');
                 li.className = 'sidebar-list-item';
                 li.innerHTML = `
-                    <span class="sidebar-item-num completed">${res.queue_number}</span>
+                    <span class="sidebar-item-num completed">${res.ticket_number}</span>
                     <span class="sidebar-item-name">${res.full_name}</span>
                 `;
                 completedListEl.appendChild(li);
@@ -304,5 +275,4 @@ function nextSlide() {
     showSlide(currentSlide);
 }
 
-// Auto slide every 10 seconds
 setInterval(nextSlide, 10000);

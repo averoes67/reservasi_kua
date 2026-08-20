@@ -87,18 +87,9 @@ function initializeCustomSelects() {
     });
 }
 
-// Helper: Get reservations array from LocalStorage
-function getReservations() {
-    return JSON.parse(localStorage.getItem('reservations')) || [];
-}
-
-// Helper: Save reservations array to LocalStorage
-function saveReservations(data) {
-    localStorage.setItem('reservations', JSON.stringify(data));
-}
 
 // Queue Generation & Form Submission
-function handleFormSubmit(event) {
+async function handleFormSubmit(event) {
     event.preventDefault();
     
     const fullName = document.getElementById('fullName').value.trim();
@@ -118,43 +109,52 @@ function handleFormSubmit(event) {
         alert('Mohon lengkapi semua kolom formulir.');
         return;
     }
+    
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+    submitBtn.disabled = true;
 
-    const reservations = getReservations();
-    
-    // Generate next queue number for the selected date
-    const dateReservations = reservations.filter(r => r.reservation_date === reserveDate);
-    let nextNum = 1;
-    
-    if (dateReservations.length > 0) {
-        // Extract queue numbers and find maximum
-        const nums = dateReservations.map(r => {
-            const match = r.queue_number.match(/A-(\d+)/);
-            return match ? parseInt(match[1], 10) : 0;
+    try {
+        const response = await fetch('/api/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                fullName,
+                phoneNumber,
+                reserveDate,
+                timeSlot,
+                purpose
+            })
         });
-        nextNum = Math.max(...nums) + 1;
+
+        if (!response.ok) {
+            throw new Error('Gagal menyimpan pendaftaran');
+        }
+
+        const data = await response.json();
+        
+        // Create new reservation object for digital ticket view
+        const newReservation = {
+            queue_number: data.ticketNumber,
+            full_name: fullName,
+            phone_number: phoneNumber,
+            reservation_date: reserveDate,
+            time_slot: timeSlot,
+            purpose: purpose,
+            status: 'waiting',
+            created_at: new Date().toISOString()
+        };
+        
+        // Show digital ticket
+        displayTicket(newReservation);
+        
+    } catch (error) {
+        alert('Terjadi kesalahan: ' + error.message);
+    } finally {
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
     }
-    
-    const queueNumber = `A-${String(nextNum).padStart(3, '0')}`;
-    
-    // Create new reservation object
-    const newReservation = {
-        id: 'res_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now(),
-        queue_number: queueNumber,
-        full_name: fullName,
-        phone_number: phoneNumber,
-        reservation_date: reserveDate,
-        time_slot: timeSlot,
-        purpose: purpose,
-        status: 'waiting', // waiting, serving, completed, cancelled
-        created_at: new Date().toISOString()
-    };
-    
-    // Save to LocalStorage
-    reservations.push(newReservation);
-    saveReservations(reservations);
-    
-    // Show digital ticket
-    displayTicket(newReservation);
 }
 
 // Digital Ticket Display & Operations

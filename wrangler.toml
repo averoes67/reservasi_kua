@@ -1,0 +1,7 @@
+name = "website-reservasi"
+pages_build_output_dir = "./"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kua-db"
+database_id = "TBD" # Ganti dengan ID database D1 Anda nantinya
