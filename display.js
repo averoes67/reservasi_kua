@@ -27,13 +27,26 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(syncData, 2500);
 
     // Audio init listener (browser blocks web audio until first user interaction)
-    document.body.addEventListener('click', () => {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) {
-            const ctx = new AudioContext();
-            ctx.resume();
-        }
-    }, { once: true });
+    const overlay = document.getElementById('audio-enable-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            // Aktifkan Audio Context
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const ctx = new AudioContext();
+                ctx.resume();
+            }
+            
+            // Inisialisasi Speech Synthesizer agar browser memberi izin
+            if ('speechSynthesis' in window) {
+                const msg = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(msg);
+            }
+            
+            // Sembunyikan overlay
+            overlay.style.display = 'none';
+        });
+    }
 });
 
 // 1. Digital Clock Widget
