@@ -305,40 +305,40 @@ function downloadTicket() {
     
     // Logo Header
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 26px Outfit, sans-serif';
+    ctx.font = 'bold 36px Outfit, sans-serif';
     ctx.textAlign = 'left';
     ctx.fillText('KUA', 60, 85);
     
     ctx.fillStyle = '#ffffff';
-    ctx.font = '500 13px Inter, sans-serif';
-    ctx.fillText('SISTEM ANTREAN RESMI', 125, 84);
+    ctx.font = '500 16px Inter, sans-serif';
+    ctx.fillText('SISTEM ANTREAN RESMI', 140, 84);
     
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 12px Inter, sans-serif';
+    ctx.font = 'bold 16px Inter, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText('MENUNGGU / WAITING', width - 60, 84);
     
     // Big Queue Number section
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 13px Inter, sans-serif';
+    ctx.font = 'bold 22px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('NOMOR ANTREAN', width / 2, 165);
     
     // Main Huge digits
-    const qNumGrad = ctx.createLinearGradient(width/2 - 100, 0, width/2 + 100, 0);
+    const qNumGrad = ctx.createLinearGradient(width/2 - 150, 0, width/2 + 150, 0);
     qNumGrad.addColorStop(0, '#16a34a');
     qNumGrad.addColorStop(1, '#65a30d');
     ctx.fillStyle = qNumGrad;
-    ctx.font = 'extrabold 92px Outfit, sans-serif';
-    ctx.fillText(currentActiveTicket.queue_number, width / 2, 260);
+    ctx.font = '800 140px Outfit, sans-serif';
+    ctx.fillText(currentActiveTicket.queue_number, width / 2, 275);
     
     // Notch Divider
     ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([6, 6]);
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 8]);
     ctx.beginPath();
-    ctx.moveTo(50, 305);
-    ctx.lineTo(width - 50, 305);
+    ctx.moveTo(50, 325);
+    ctx.lineTo(width - 50, 325);
     ctx.stroke();
     ctx.setLineDash([]);
     
@@ -347,40 +347,40 @@ function downloadTicket() {
     
     // Row 1: Nama & Layanan
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 11px Inter, sans-serif';
-    ctx.fillText('NAMA LENGKAP', 60, 355);
-    ctx.fillText('LAYANAN', width / 2 + 30, 355);
+    ctx.font = 'bold 15px Inter, sans-serif';
+    ctx.fillText('NAMA LENGKAP', 60, 385);
+    ctx.fillText('LAYANAN', width / 2 + 30, 385);
     
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 16px Inter, sans-serif';
-    ctx.fillText(currentActiveTicket.full_name, 60, 385);
-    ctx.fillText(currentActiveTicket.purpose, width / 2 + 30, 385);
+    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.fillText(currentActiveTicket.full_name, 60, 415);
+    ctx.fillText(currentActiveTicket.purpose, width / 2 + 30, 415);
     
     // Row 2: Tanggal & Sesi
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 11px Inter, sans-serif';
-    ctx.fillText('TANGGAL KUNJUNGAN', 60, 455);
-    ctx.fillText('SESI WAKTU', width / 2 + 30, 455);
+    ctx.font = 'bold 15px Inter, sans-serif';
+    ctx.fillText('TANGGAL KUNJUNGAN', 60, 485);
+    ctx.fillText('SESI WAKTU', width / 2 + 30, 485);
     
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(currentActiveTicket.reservation_date).toLocaleDateString('id-ID', options);
     
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 16px Inter, sans-serif';
-    ctx.fillText(formattedDate, 60, 485);
-    ctx.fillText(currentActiveTicket.time_slot, width / 2 + 30, 485);
+    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.fillText(formattedDate, 60, 515);
+    ctx.fillText(currentActiveTicket.time_slot, width / 2 + 30, 515);
     
     // Barcode container box (card)
     ctx.fillStyle = '#f8fafc';
     ctx.strokeStyle = '#e2e8f0';
     ctx.lineWidth = 1;
-    ctx.fillRect(width / 2 - 170, 550, 340, 110);
-    ctx.strokeRect(width / 2 - 170, 550, 340, 110);
+    ctx.fillRect(width / 2 - 200, 570, 400, 130);
+    ctx.strokeRect(width / 2 - 200, 570, 400, 130);
     
     // Barcode lines
     ctx.fillStyle = '#0f172a';
-    let x = width / 2 - 145;
-    const endX = width / 2 + 145;
+    let x = width / 2 - 170;
+    const endX = width / 2 + 170;
     let seed = 123;
     function seededRandom() {
         var x = Math.sin(seed++) * 10000;
@@ -390,23 +390,25 @@ function downloadTicket() {
     while (x < endX) {
         let barWidth = Math.floor(seededRandom() * 4) + 1;
         let spacing = Math.floor(seededRandom() * 3) + 2;
-        ctx.fillRect(x, 565, barWidth, 65);
+        ctx.fillRect(x, 590, barWidth, 65);
         x += barWidth + spacing;
     }
     
-    ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 13px Inter, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(currentActiveTicket.queue_number, width / 2, 648);
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 15px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(currentActiveTicket.queue_number, width / 2 + 170, 680);
     
-    // Footer notes
+    // Bottom Warning Text
     ctx.fillStyle = '#ca8a04';
-    ctx.font = 'bold 13px Inter, sans-serif';
-    ctx.fillText('*Harap datang 15 menit sebelum sesi dimulai', width / 2, 725);
+    ctx.font = 'bold 14px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('*Harap datang 15 menit sebelum sesi dimulai', width / 2, 740);
     
-    ctx.fillStyle = '#64748b';
-    ctx.font = '12px Inter, sans-serif';
-    ctx.fillText('Tunjukkan tiket digital ini kepada petugas di loket.', width / 2, 755);
+    // Footer Branding
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '500 13px Inter, sans-serif';
+    ctx.fillText('Dicetak secara otomatis oleh Sistem KUA', width / 2, height - 35);
     
     // Trigger download optimized for Mobile & Desktop
     if (canvas.toBlob) {
@@ -417,21 +419,8 @@ function downloadTicket() {
             }
 
             const fileName = `Tiket-Antrian-${currentActiveTicket.queue_number}.png`;
-            const file = new File([blob], fileName, { type: 'image/png' });
-
-            // 1. Try Mobile Web Share API first if supported with files
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({
-                    title: `Tiket Antrean ${currentActiveTicket.queue_number}`,
-                    text: `Tiket Antrean Digital KUA ${currentActiveTicket.queue_number} atas nama ${currentActiveTicket.full_name}`,
-                    files: [file]
-                }).catch(() => {
-                    triggerBlobDownload(blob, fileName);
-                });
-                return;
-            }
-
-            // 2. Blob Download for Mobile & Desktop
+            
+            // Langsung memicu unduhan Blob ke perangkat pengguna
             triggerBlobDownload(blob, fileName);
         }, 'image/png');
     } else {
