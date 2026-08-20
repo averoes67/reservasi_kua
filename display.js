@@ -5,6 +5,7 @@
    ========================================================================== */
 
 let lastCalledTicketNum = null;
+let lastCalledTimestamp = null; // Track timestamp untuk deteksi panggil ulang
 let currentFilterDate = '';
 let reservationsCache = [];
 
@@ -88,12 +89,16 @@ async function syncData() {
                 
                 if (queueState.last_called_ticket) {
                     const ticketNum = queueState.last_called_ticket;
+                    const updatedAt = queueState.updated_at; // Timestamp dari DB
+                    
                     // Find name
                     const servingQueue = todayReservations.find(r => r.ticket_number === ticketNum);
                     const name = servingQueue ? servingQueue.full_name : 'Pemohon';
                     
-                    if (lastCalledTicketNum !== ticketNum) {
+                    // Trigger notifikasi jika nomor ATAU timestamp berubah (mendukung panggil ulang)
+                    if (lastCalledTicketNum !== ticketNum || lastCalledTimestamp !== updatedAt) {
                         lastCalledTicketNum = ticketNum;
+                        lastCalledTimestamp = updatedAt;
                         
                         if (callNumEl) callNumEl.innerText = ticketNum;
                         if (callNameEl) callNameEl.innerText = name;
@@ -102,6 +107,7 @@ async function syncData() {
                     }
                 } else {
                     lastCalledTicketNum = null;
+                    lastCalledTimestamp = null;
                     if (callNumEl) callNumEl.innerText = 'A-000';
                     if (callNameEl) callNameEl.innerText = 'Mempersiapkan Antrean...';
                 }

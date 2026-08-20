@@ -285,11 +285,38 @@ async function updateCallPanel() {
     if (callNameEl) callNameEl.textContent = 'Tidak ada antrean';
 }
 
-// Clear all data (For D1 we might want a new endpoint, but for now we skip this for safety)
-function clearAllData() {
-    alert("Penghapusan data di D1 dinonaktifkan di antarmuka ini untuk keamanan.");
+// Hapus semua data reservasi di database
+async function clearAllData() {
+    if (!confirm('⚠️ Apakah Anda yakin ingin menghapus SEMUA data antrean hari ini?\n\nTindakan ini tidak dapat dibatalkan.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/queue', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'clear_all' })
+        });
+        
+        if (response.ok) {
+            alert('✅ Semua data antrean berhasil dihapus.');
+            fetchAndRenderData();
+        } else {
+            alert('❌ Gagal menghapus data.');
+        }
+    } catch(e) {
+        alert('❌ Error: ' + e.message);
+    }
 }
 
-function loadSampleData() {
-    alert("Sample data generator perlu disesuaikan dengan API D1.");
+// Simpan kuota penghulu
+function saveQuota() {
+    const kuotaInput = document.getElementById('kuotaPenghulu');
+    const quotaMsg = document.getElementById('quota-msg');
+    if (kuotaInput && quotaMsg) {
+        const val = kuotaInput.value;
+        localStorage.setItem('kuotaPenghulu', val);
+        quotaMsg.textContent = `✅ Kuota berhasil disimpan: ${val} slot nikah/hari`;
+        setTimeout(() => { quotaMsg.textContent = ''; }, 3000);
+    }
 }

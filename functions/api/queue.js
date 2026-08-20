@@ -4,7 +4,7 @@ export async function onRequestGet(context) {
             "SELECT * FROM queue_state WHERE id = 1"
         ).first();
         
-        return Response.json(result || { last_called_ticket: null, counter_number: 1 });
+        return Response.json(result || { last_called_ticket: null, counter_number: 1, updated_at: null });
     } catch (e) {
         return Response.json({ error: e.message }, { status: 500 });
     }
@@ -17,7 +17,7 @@ export async function onRequestPost(context) {
         if (body.action === 'call') {
             const { ticket_number, counter_number } = body;
             
-            // Update queue state
+            // Update queue state (updated_at berubah setiap panggilan, termasuk panggil ulang)
             await context.env.DB.prepare(
                 "UPDATE queue_state SET last_called_ticket = ?, counter_number = ?, updated_at = CURRENT_TIMESTAMP WHERE id = 1"
             ).bind(ticket_number, counter_number).run();
@@ -39,6 +39,13 @@ export async function onRequestPost(context) {
             await context.env.DB.prepare(
                 "UPDATE reservations SET status = 'Batal' WHERE ticket_number = ?"
             ).bind(body.ticket_number).run();
+            return Response.json({ success: true });
+        }
+        else if (body.action === 'clear_all') {
+            await context.env.DB.prepare("DELETE FROM reservations").run();
+            await context.env.DB.prepare(
+                "UPDATE queue_state SET last_called_ticket = NULL, counter_number = 1, updated_at = CURRENT_TIMESTAMP WHERE id = 1"
+            ).run();
             return Response.json({ success: true });
         }
         
