@@ -76,6 +76,7 @@ async function fetchAndRenderData() {
         globalReservations = reservations;
         renderAdminTable(reservations);
         updateAdminStats(reservations);
+        updateCallPanel();
     } catch (error) {
         console.error('Error fetching reservations:', error);
         // Fallback for local testing without Wrangler
@@ -160,7 +161,6 @@ function updateAdminStats(reservations) {
 }
 
 async function callTargetQueue(ticketNumber) {
-    // We assume counter 1 for now (Multi-loket will change this later)
     try {
         const response = await fetch('/api/queue', {
             method: 'POST',
@@ -173,13 +173,26 @@ async function callTargetQueue(ticketNumber) {
         });
         
         if(response.ok) {
-            // refresh data
+            // Update tampilan panel panggilan
+            const callNumEl = document.getElementById('current-call-num');
+            const callNameEl = document.getElementById('current-call-name');
+            if (callNumEl) callNumEl.textContent = ticketNumber;
+            
+            // Cari nama dari data reservasi
+            const res = globalReservations.find(r => r.ticket_number === ticketNumber);
+            if (callNameEl && res) {
+                callNameEl.textContent = res.full_name;
+            }
+            
+            // Refresh data tabel
             fetchAndRenderData();
         } else {
-            alert("Gagal memanggil antrean.");
+            const errData = await response.json().catch(() => ({}));
+            alert('Gagal memanggil antrean: ' + (errData.error || 'Unknown error'));
         }
     } catch(e) {
         console.error(e);
+        alert('Gagal memanggil antrean: ' + e.message);
     }
 }
 
@@ -228,11 +241,25 @@ function recallCurrentQueue() {
     const servingRes = globalReservations.find(r => r.reserve_date === filterDate && r.status.toLowerCase() === 'dipanggil');
     
     if (servingRes) {
-        // Ping API or just send local event for TV if not using websockets?
-        // TV display will poll, so we can just re-save to queue.
         callTargetQueue(servingRes.ticket_number); 
     } else {
-        alert('Tidak ada antrean aktif yang sedang dilayani untuk dipanggil.');
+        alert('Tidak ada antrean aktif yang sedang dilayani untuk dipanggil ulang.');
+    }
+}
+
+// Setelah data di-fetch, update juga panel panggilan
+function updateCallPanel() {
+    const filterDate = document.getElementById('admin-date-filter').value;
+    const servingRes = globalReservations.find(r => r.reserve_date === filterDate && r.status.toLowerCase() === 'dipanggil');
+    const callNumEl = document.getElementById('current-call-num');
+    const callNameEl = document.getElementById('current-call-name');
+    
+    if (servingRes) {
+        if (callNumEl) callNumEl.textContent = servingRes.ticket_number;
+        if (callNameEl) callNameEl.textContent = servingRes.full_name;
+    } else {
+        if (callNumEl) callNumEl.textContent = 'A-000';
+        if (callNameEl) callNameEl.textContent = 'Tidak ada antrean';
     }
 }
 
