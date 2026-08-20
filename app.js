@@ -267,148 +267,200 @@ function downloadTicket() {
     
     const canvas = document.getElementById('export-canvas');
     const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
+    const W = canvas.width;   // 900
+    const H = canvas.height;  // 1200
+    const pad = 40;            // Padding luar
+    const innerPad = 60;       // Padding dalam konten
     
-    // Draw Background
-    ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(0, 0, width, height);
+    // Helper: wrap text jika terlalu panjang
+    function wrapText(ctx, text, maxWidth) {
+        const words = text.split(' ');
+        let lines = [];
+        let currentLine = words[0];
+        for (let i = 1; i < words.length; i++) {
+            const testLine = currentLine + ' ' + words[i];
+            if (ctx.measureText(testLine).width > maxWidth) {
+                lines.push(currentLine);
+                currentLine = words[i];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    }
     
-    // Outer Border
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(15, 15, width - 30, height - 30);
+    // ===== 1. BACKGROUND =====
+    ctx.fillStyle = '#f1f5f9';
+    ctx.fillRect(0, 0, W, H);
     
-    // Inner ticket container card
+    // White card with rounded corners (simulated)
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(30, 30, width - 60, height - 60);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(30, 30, width - 60, height - 60);
+    ctx.fillRect(pad, pad, W - pad * 2, H - pad * 2);
     
-    // Top Batik Decorative Strip
-    const topStripGrad = ctx.createLinearGradient(30, 30, width - 30, 30);
-    topStripGrad.addColorStop(0, '#15803d');
-    topStripGrad.addColorStop(0.3, '#16a34a');
-    topStripGrad.addColorStop(0.5, '#facc15');
-    topStripGrad.addColorStop(0.7, '#ca8a04');
-    topStripGrad.addColorStop(1, '#15803d');
-    ctx.fillStyle = topStripGrad;
-    ctx.fillRect(30, 30, width - 60, 8);
-
-    // Header Background
-    const headerGrad = ctx.createLinearGradient(30, 38, width - 30, 110);
+    // Subtle card border
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(pad, pad, W - pad * 2, H - pad * 2);
+    
+    // ===== 2. TOP DECORATIVE GRADIENT STRIP =====
+    const stripGrad = ctx.createLinearGradient(pad, pad, W - pad, pad);
+    stripGrad.addColorStop(0, '#15803d');
+    stripGrad.addColorStop(0.35, '#16a34a');
+    stripGrad.addColorStop(0.5, '#facc15');
+    stripGrad.addColorStop(0.65, '#ca8a04');
+    stripGrad.addColorStop(1, '#15803d');
+    ctx.fillStyle = stripGrad;
+    ctx.fillRect(pad, pad, W - pad * 2, 10);
+    
+    // ===== 3. HEADER BAR =====
+    const headerY = pad + 10;
+    const headerH = 100;
+    const headerGrad = ctx.createLinearGradient(pad, headerY, W - pad, headerY + headerH);
     headerGrad.addColorStop(0, '#16a34a');
     headerGrad.addColorStop(1, '#0f766e');
     ctx.fillStyle = headerGrad;
-    ctx.fillRect(30, 38, width - 60, 75);
+    ctx.fillRect(pad, headerY, W - pad * 2, headerH);
     
-    // Logo Header
+    // Header: KUA logo text
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 36px Outfit, sans-serif';
+    ctx.font = 'bold 44px Outfit, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('KUA', 60, 85);
+    ctx.fillText('KUA', innerPad + 10, headerY + 63);
     
+    // Header: Sub-title
     ctx.fillStyle = '#ffffff';
-    ctx.font = '500 16px Inter, sans-serif';
-    ctx.fillText('SISTEM ANTREAN RESMI', 140, 84);
+    ctx.font = '500 20px Inter, sans-serif';
+    ctx.fillText('SISTEM ANTREAN RESMI', innerPad + 115, headerY + 60);
     
+    // Header: Status badge
     ctx.fillStyle = '#fef08a';
-    ctx.font = 'bold 16px Inter, sans-serif';
+    ctx.font = 'bold 18px Inter, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText('MENUNGGU / WAITING', width - 60, 84);
+    ctx.fillText('MENUNGGU / WAITING', W - innerPad - 10, headerY + 60);
     
-    // Big Queue Number section
+    // ===== 4. NOMOR ANTREAN (BESAR) =====
+    const queueSectionY = headerY + headerH + 40;
+    
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.font = 'bold 24px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('NOMOR ANTREAN', width / 2, 165);
+    ctx.fillText('NOMOR ANTREAN', W / 2, queueSectionY);
     
-    // Main Huge digits
-    const qNumGrad = ctx.createLinearGradient(width/2 - 150, 0, width/2 + 150, 0);
+    // Huge queue number
+    const qNumGrad = ctx.createLinearGradient(W/2 - 200, 0, W/2 + 200, 0);
     qNumGrad.addColorStop(0, '#16a34a');
     qNumGrad.addColorStop(1, '#65a30d');
     ctx.fillStyle = qNumGrad;
-    ctx.font = '800 140px Outfit, sans-serif';
-    ctx.fillText(currentActiveTicket.queue_number, width / 2, 275);
+    ctx.font = '800 160px Outfit, sans-serif';
+    ctx.fillText(currentActiveTicket.queue_number, W / 2, queueSectionY + 140);
     
-    // Notch Divider
+    // ===== 5. GARIS PUTUS-PUTUS (DIVIDER) =====
+    const dividerY = queueSectionY + 180;
     ctx.strokeStyle = '#cbd5e1';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([8, 8]);
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([10, 8]);
     ctx.beginPath();
-    ctx.moveTo(50, 325);
-    ctx.lineTo(width - 50, 325);
+    ctx.moveTo(innerPad, dividerY);
+    ctx.lineTo(W - innerPad, dividerY);
     ctx.stroke();
     ctx.setLineDash([]);
     
-    // Detail info columns
+    // ===== 6. DATA DETAIL (2 KOLOM, 2 BARIS) =====
+    const detailY = dividerY + 50;
+    const colLeft = innerPad + 10;
+    const colRight = W / 2 + 20;
+    const colRightMaxW = W - innerPad - colRight - 10; // Max width untuk kolom kanan
+    const colLeftMaxW = W / 2 - innerPad - 10;         // Max width untuk kolom kiri
+    
+    // --- Baris 1: Nama & Layanan ---
     ctx.textAlign = 'left';
-    
-    // Row 1: Nama & Layanan
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 15px Inter, sans-serif';
-    ctx.fillText('NAMA LENGKAP', 60, 385);
-    ctx.fillText('LAYANAN', width / 2 + 30, 385);
+    ctx.font = 'bold 16px Inter, sans-serif';
+    ctx.fillText('NAMA LENGKAP', colLeft, detailY);
+    ctx.fillText('LAYANAN', colRight, detailY);
     
+    // Nama (with wrapping)
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 22px Inter, sans-serif';
-    ctx.fillText(currentActiveTicket.full_name, 60, 415);
-    ctx.fillText(currentActiveTicket.purpose, width / 2 + 30, 415);
+    ctx.font = 'bold 24px Inter, sans-serif';
+    const nameLines = wrapText(ctx, currentActiveTicket.full_name, colLeftMaxW);
+    nameLines.forEach((line, i) => {
+        ctx.fillText(line, colLeft, detailY + 35 + (i * 30));
+    });
     
-    // Row 2: Tanggal & Sesi
+    // Layanan (with wrapping)
+    ctx.font = 'bold 24px Inter, sans-serif';
+    const purposeLines = wrapText(ctx, currentActiveTicket.purpose, colRightMaxW);
+    purposeLines.forEach((line, i) => {
+        ctx.fillText(line, colRight, detailY + 35 + (i * 30));
+    });
+    
+    // --- Baris 2: Tanggal & Sesi ---
+    const row2Y = detailY + 120;
     ctx.fillStyle = '#64748b';
-    ctx.font = 'bold 15px Inter, sans-serif';
-    ctx.fillText('TANGGAL KUNJUNGAN', 60, 485);
-    ctx.fillText('SESI WAKTU', width / 2 + 30, 485);
+    ctx.font = 'bold 16px Inter, sans-serif';
+    ctx.fillText('TANGGAL KUNJUNGAN', colLeft, row2Y);
+    ctx.fillText('SESI WAKTU', colRight, row2Y);
     
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const formattedDate = new Date(currentActiveTicket.reservation_date).toLocaleDateString('id-ID', options);
     
     ctx.fillStyle = '#0f172a';
-    ctx.font = 'bold 22px Inter, sans-serif';
-    ctx.fillText(formattedDate, 60, 515);
-    ctx.fillText(currentActiveTicket.time_slot, width / 2 + 30, 515);
+    ctx.font = 'bold 24px Inter, sans-serif';
+    ctx.fillText(formattedDate, colLeft, row2Y + 35);
     
-    // Barcode container box (card)
+    // Sesi (with wrapping)
+    const slotLines = wrapText(ctx, currentActiveTicket.time_slot, colRightMaxW);
+    slotLines.forEach((line, i) => {
+        ctx.fillText(line, colRight, row2Y + 35 + (i * 30));
+    });
+    
+    // ===== 7. BARCODE =====
+    const barcodeY = row2Y + 110;
+    const barcodeW = 450;
+    const barcodeH = 150;
+    const barcodeX = (W - barcodeW) / 2;
+    
+    // Barcode background
     ctx.fillStyle = '#f8fafc';
     ctx.strokeStyle = '#e2e8f0';
-    ctx.lineWidth = 1;
-    ctx.fillRect(width / 2 - 200, 570, 400, 130);
-    ctx.strokeRect(width / 2 - 200, 570, 400, 130);
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(barcodeX, barcodeY, barcodeW, barcodeH);
+    ctx.strokeRect(barcodeX, barcodeY, barcodeW, barcodeH);
     
     // Barcode lines
     ctx.fillStyle = '#0f172a';
-    let x = width / 2 - 170;
-    const endX = width / 2 + 170;
+    let bx = barcodeX + 25;
+    const bEndX = barcodeX + barcodeW - 25;
     let seed = 123;
     function seededRandom() {
-        var x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
+        var v = Math.sin(seed++) * 10000;
+        return v - Math.floor(v);
+    }
+    while (bx < bEndX) {
+        let barW = Math.floor(seededRandom() * 5) + 1;
+        let gap = Math.floor(seededRandom() * 3) + 2;
+        ctx.fillRect(bx, barcodeY + 20, barW, 80);
+        bx += barW + gap;
     }
     
-    while (x < endX) {
-        let barWidth = Math.floor(seededRandom() * 4) + 1;
-        let spacing = Math.floor(seededRandom() * 3) + 2;
-        ctx.fillRect(x, 590, barWidth, 65);
-        x += barWidth + spacing;
-    }
-    
-    ctx.fillStyle = '#000000';
-    ctx.font = 'bold 15px monospace';
-    ctx.textAlign = 'right';
-    ctx.fillText(currentActiveTicket.queue_number, width / 2 + 170, 680);
-    
-    // Bottom Warning Text
-    ctx.fillStyle = '#ca8a04';
-    ctx.font = 'bold 14px Inter, sans-serif';
+    // Barcode number
+    ctx.fillStyle = '#334155';
+    ctx.font = 'bold 18px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('*Harap datang 15 menit sebelum sesi dimulai', width / 2, 740);
+    ctx.fillText(currentActiveTicket.queue_number, W / 2, barcodeY + 130);
     
-    // Footer Branding
+    // ===== 8. PERINGATAN =====
+    const warnY = barcodeY + barcodeH + 45;
+    ctx.fillStyle = '#ca8a04';
+    ctx.font = 'bold 18px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('*Harap datang 15 menit sebelum sesi dimulai', W / 2, warnY);
+    
+    // ===== 9. FOOTER =====
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '500 13px Inter, sans-serif';
-    ctx.fillText('Dicetak secara otomatis oleh Sistem KUA', width / 2, height - 35);
+    ctx.font = '500 15px Inter, sans-serif';
+    ctx.fillText('Dicetak secara otomatis oleh Sistem Antrean Digital KUA', W / 2, H - pad - 25);
     
     // Trigger download optimized for Mobile & Desktop
     if (canvas.toBlob) {
