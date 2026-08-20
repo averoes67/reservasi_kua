@@ -1,7 +1,8 @@
 name = "website-reservasi"
 pages_build_output_dir = "./"
+compatibility_date = "2024-08-20"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "kua-db"
-database_id = "24b89472-4661-451d-a27a-7422ef8d9abd" # Ganti dengan ID database D1 Anda nantinya
+database_id = "24b89472-4661-451d-a27a-7422ef8d9abd"
