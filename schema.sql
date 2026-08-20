@@ -10,6 +10,7 @@ CREATE TABLE reservations (
     time_slot TEXT NOT NULL,
     purpose TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'Menunggu',
+    counter_number INTEGER DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
