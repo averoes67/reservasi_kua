@@ -154,7 +154,7 @@ body::before {
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 1.25rem 2rem;
     display: flex;
@@ -232,7 +232,7 @@ body::before {
 /* 4. Layout & Layout Containers */
 .main-content {
     flex: 1;
-    max-width: 1200px;
+    max-width: 1440px;
     width: 100%;
     margin: 0 auto;
     padding: 3rem 2rem;
@@ -1096,6 +1096,52 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* 13. Responsive Adaptations */
+@media (max-width: 768px) {
+    /* Merubah Dropdown menjadi Bottom-Sheet di HP */
+    .custom-select-options {
+        position: fixed;
+        bottom: 0;
+        top: auto;
+        left: 0;
+        width: 100%;
+        border-radius: 24px 24px 0 0;
+        max-height: 60vh;
+        z-index: 10000;
+        transform: translateY(100%);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+        padding-bottom: 2rem; /* Ruang ekstra di bawah */
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.2);
+    }
+    
+    .custom-select-wrapper.open .custom-select-options {
+        transform: translateY(0);
+    }
+    
+    /* Backdrop hitam transparan */
+    .custom-select-wrapper::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
+    }
+    
+    .custom-select-wrapper.open::before {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .custom-select-option {
+        padding: 1.25rem 1.5rem;
+        font-size: 1.05rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+}
+
 @media (max-width: 600px) {
     .main-content {
         padding: 1.5rem 1rem;
@@ -1103,6 +1149,13 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     
     .section-header h1 {
         font-size: 1.75rem;
+    }
+    
+    .btn-block[type="submit"] {
+        position: sticky;
+        bottom: 1rem;
+        z-index: 100;
+        box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4);
     }
 
     .section-header p {
@@ -2135,11 +2188,20 @@ select:focus {
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.page-section > .glass-card:hover {
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+.card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08); /* Lebih terasa dimensinya */
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Stat card hover animation */
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15); /* Bayangan hover lebih dalam */
+}
+
 .stat-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2381,3 +2443,17 @@ a:focus-visible {
         border: 1px solid #ddd;
     }
 }
+
+ / *   2 0 .   U l t r a - W i d e   /   4 K   M o n i t o r   O p t i m i z a t i o n s   * / 
+ @ m e d i a   ( m i n - w i d t h :   1 9 2 0 p x )   { 
+         . d i s p l a y - c a l l - n u m b e r   {   f o n t - s i z e :   1 4 r e m ;   } 
+         . d i s p l a y - c a l l - n a m e   {   f o n t - s i z e :   4 . 5 r e m ;   } 
+         . d i s p l a y - l a b e l   {   f o n t - s i z e :   2 . 2 r e m ;   } 
+         . s i d e b a r - i t e m - n u m   {   f o n t - s i z e :   2 . 5 r e m ;   } 
+         . s i d e b a r - i t e m - n a m e   {   f o n t - s i z e :   1 . 5 r e m ;   } 
+         . d i s p l a y - s i d e b a r   {   g a p :   2 r e m ;   } 
+         . d i s p l a y - h e a d e r - t i t l e   {   f o n t - s i z e :   2 r e m ;   } 
+         . d i s p l a y - h e a d e r - t i m e   {   f o n t - s i z e :   1 . 5 r e m ;   } 
+ } 
+  
+ 
