@@ -24,20 +24,20 @@ export async function onRequestPost(context) {
             
             // Update reservation status to Dipanggil
             await context.env.DB.prepare(
-                "UPDATE reservations SET status = 'Dipanggil', counter_number = ? WHERE ticket_number = ?"
+                "UPDATE reservations SET status = 'Dipanggil', counter_number = ? WHERE queue_number = ?"
             ).bind(counter_number, ticket_number).run();
             
             return Response.json({ success: true });
         } 
         else if (body.action === 'complete') {
             await context.env.DB.prepare(
-                "UPDATE reservations SET status = 'Selesai' WHERE ticket_number = ?"
+                "UPDATE reservations SET status = 'Selesai' WHERE queue_number = ?"
             ).bind(body.ticket_number).run();
             return Response.json({ success: true });
         }
         else if (body.action === 'cancel') {
             await context.env.DB.prepare(
-                "UPDATE reservations SET status = 'Batal' WHERE ticket_number = ?"
+                "UPDATE reservations SET status = 'Batal' WHERE queue_number = ?"
             ).bind(body.ticket_number).run();
             return Response.json({ success: true });
         }
