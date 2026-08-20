@@ -87,6 +87,7 @@ async function fetchAndRenderData() {
 }
 
 function renderAdminTable(reservations) {
+    if (!reservations) reservations = globalReservations;
     const tableBody = document.getElementById('admin-table-body');
     const filterDate = document.getElementById('admin-date-filter').value;
     
@@ -248,19 +249,40 @@ function recallCurrentQueue() {
 }
 
 // Setelah data di-fetch, update juga panel panggilan
-function updateCallPanel() {
-    const filterDate = document.getElementById('admin-date-filter').value;
-    const servingRes = globalReservations.find(r => r.reserve_date === filterDate && r.status.toLowerCase() === 'dipanggil');
+async function updateCallPanel() {
     const callNumEl = document.getElementById('current-call-num');
     const callNameEl = document.getElementById('current-call-name');
+    
+    // Cek dari data reservasi yang sedang dipanggil
+    const filterDate = document.getElementById('admin-date-filter').value;
+    const servingRes = globalReservations.find(r => r.reserve_date === filterDate && r.status.toLowerCase() === 'dipanggil');
     
     if (servingRes) {
         if (callNumEl) callNumEl.textContent = servingRes.ticket_number;
         if (callNameEl) callNameEl.textContent = servingRes.full_name;
-    } else {
-        if (callNumEl) callNumEl.textContent = 'A-000';
-        if (callNameEl) callNameEl.textContent = 'Tidak ada antrean';
+        return;
     }
+    
+    // Fallback: ambil dari queue_state API
+    try {
+        const qRes = await fetch('/api/queue');
+        if (qRes.ok) {
+            const qData = await qRes.json();
+            if (qData && qData.last_called_ticket) {
+                if (callNumEl) callNumEl.textContent = qData.last_called_ticket;
+                // Cari nama dari globalReservations
+                const matchRes = globalReservations.find(r => r.ticket_number === qData.last_called_ticket);
+                if (callNameEl) callNameEl.textContent = matchRes ? matchRes.full_name : 'Antrean terakhir';
+                return;
+            }
+        }
+    } catch(e) {
+        console.error('Error fetching queue state:', e);
+    }
+    
+    // Jika benar-benar tidak ada
+    if (callNumEl) callNumEl.textContent = 'A-000';
+    if (callNameEl) callNameEl.textContent = 'Tidak ada antrean';
 }
 
 // Clear all data (For D1 we might want a new endpoint, but for now we skip this for safety)
