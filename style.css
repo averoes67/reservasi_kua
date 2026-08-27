@@ -1582,12 +1582,39 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .main-call-card {
-    padding: 3rem;
+    padding: 2.5rem 2rem;
     justify-content: space-between;
-    position: relative;
+    position: absolute; /* Relative to placeholder */
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 5;
+    background: rgba(255, 255, 255, 0.7);
+    transform-origin: center right;
 }
 
-.call-badge {
+.main-call-card.queue-calling {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 75vw;
+    height: 70vh;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+    border: 4px solid var(--primary);
+}
+
+.main-call-card.queue-calling .display-call-number {
+    font-size: 12rem;
+}
+
+.main-call-card.queue-calling .display-call-name {
+    font-size: 3.5rem;
+}
     background: rgba(22, 163, 74, 0.1);
     color: var(--primary);
     border: 1px solid rgba(22, 163, 74, 0.25);
@@ -2083,89 +2110,92 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 /* ==========================================================================
-   EDUCATIONAL SLIDER STYLES
+   AD CAROUSEL STYLES (MONITOR IDLE MODE)
    ========================================================================== */
-.edu-slider-card {
+.ad-carousel-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 2.5rem;
     position: relative;
     overflow: hidden;
+    padding: 0;
 }
 
-.edu-slider-container {
+.ad-carousel-container {
     flex: 1;
     display: flex;
     position: relative;
+    height: 100%;
 }
 
-.edu-slide {
+.ad-slide {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
+    bottom: 0;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    height: 100%;
+    transition: opacity 1s ease-in-out;
+    background: var(--bg-dark);
 }
 
-.edu-slide.active {
+.ad-slide.active {
     opacity: 1;
     z-index: 2;
 }
 
-.edu-icon {
-    font-size: 3.5rem;
-    color: var(--primary);
-    margin-bottom: 1.5rem;
-    background: rgba(22, 163, 74, 0.1);
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.ad-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6);
 }
 
-.edu-slide h3 {
+.ad-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 3rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color: white;
+}
+
+.ad-overlay h2 {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
-    color: var(--text-dark);
+    font-size: 2.5rem;
     margin-bottom: 1rem;
+    color: #fde047;
 }
 
-.edu-slide p {
-    font-size: 1rem;
-    color: var(--text-muted);
-    line-height: 1.6;
+.ad-overlay p {
+    font-size: 1.3rem;
+    line-height: 1.5;
+    color: #e2e8f0;
 }
 
-.edu-dots {
+.ad-dots {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 2rem;
     display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
+    gap: 0.8rem;
     z-index: 10;
 }
 
-.edu-dots .dot {
-    width: 10px;
-    height: 10px;
+.ad-dots .ad-dot {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.4);
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.edu-dots .dot.active {
+.ad-dots .ad-dot.active {
     background: var(--primary);
+    transform: scale(1.3);
 }
+
 
 /* ==========================================================================
    PREMIUM ENHANCEMENTS & MICRO-ANIMATIONS

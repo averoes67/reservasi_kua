@@ -201,24 +201,16 @@ function speakQueueCall(queueNumber, name) {
 
 function triggerCallNotification(queueNumber, name) {
     const mainCard = document.querySelector('.main-call-card');
-    const callBox = document.querySelector('.display-call-box');
     
-    // Reset and add pulse alert to main card
+    // Aktifkan mode Panggilan (memindahkan antrean ke tengah membesar)
     if (mainCard) {
-        mainCard.classList.remove('pulse-alert');
-        void mainCard.offsetWidth; 
-        mainCard.classList.add('pulse-alert');
-    }
-    
-    // Zoom animation for the queue number box
-    if (callBox) {
-        callBox.classList.remove('zoomed-alert');
-        void callBox.offsetWidth;
-        callBox.classList.add('zoomed-alert');
+        mainCard.classList.remove('queue-calling');
+        void mainCard.offsetWidth;
+        mainCard.classList.add('queue-calling');
         
-        // Kembalikan ke ukuran semula setelah 8 detik (durasi suara + jeda)
+        // Kembalikan ke mode standby (layar Iklan) setelah 8 detik
         setTimeout(() => {
-            callBox.classList.remove('zoomed-alert');
+            mainCard.classList.remove('queue-calling');
         }, 8000);
     }
     
@@ -284,6 +276,31 @@ function updateSidebarLists(todayReservations) {
             });
         }
     }
+
+// --- Ad Carousel Logic ---
+let currentAdSlide = 0;
+const adSlides = document.querySelectorAll('.ad-slide');
+const adDots = document.querySelectorAll('.ad-dots .ad-dot');
+
+function showAdSlide(index) {
+    if (!adSlides.length) return;
+    
+    adSlides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        if(adDots[i]) adDots[i].classList.remove('active');
+    });
+    
+    adSlides[index].classList.add('active');
+    if(adDots[index]) adDots[index].classList.add('active');
+}
+
+function nextAdSlide() {
+    if (!adSlides.length) return;
+    currentAdSlide = (currentAdSlide + 1) % adSlides.length;
+    showAdSlide(currentAdSlide);
+}
+
+setInterval(nextAdSlide, 8000); // Ganti iklan setiap 8 detik
 }
 
 

@@ -46,26 +46,53 @@
     <main class="display-main-grid">
         
 
-        <!-- Center Side: Main Call Screen -->
-        <section class="display-card main-call-card glass-card text-center">
-            <div class="call-badge"><i class="fa-solid fa-bullhorn"></i> SEDANG DIPANGGIL / NOW SERVING</div>
-            
-            <div class="display-call-box">
-                <h1 id="call-num" class="display-call-number">A-000</h1>
+        <!-- Center Side: Ad Carousel -->
+        <section class="display-card ad-carousel-card glass-card">
+            <div class="ad-carousel-container" id="adCarousel">
+                <!-- Slide 1: Layanan SIMKAH -->
+                <div class="ad-slide active">
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop" alt="Pernikahan">
+                    <div class="ad-overlay">
+                        <h2>Daftar Nikah Lebih Mudah!</h2>
+                        <p>Gunakan layanan SIMKAH Online untuk pendaftaran di mana saja dan kapan saja.</p>
+                    </div>
+                </div>
+                <!-- Slide 2: Layanan Masyarakat -->
+                <div class="ad-slide">
+                    <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=2069&auto=format&fit=crop" alt="Layanan KUA">
+                    <div class="ad-overlay">
+                        <h2>Konsultasi Keluarga Sakinah</h2>
+                        <p>Kami melayani bimbingan pranikah dan konsultasi keluarga secara gratis.</p>
+                    </div>
+                </div>
             </div>
-            
-            <div class="display-name-box">
-                <p id="call-name" class="display-call-name">Mempersiapkan Antrean...</p>
-            </div>
-            
-            <div class="display-instruction-box">
-                <span class="loket-title">SILAKAN MENUJU</span>
-                <h2 class="loket-destination">LOKET LAYANAN UTAMA</h2>
+            <div class="ad-dots" id="adDots">
+                <span class="ad-dot active"></span>
+                <span class="ad-dot"></span>
             </div>
         </section>
-
-        <!-- Right Side: Sidebar Lists -->
+        <!-- Right Side: Sidebar Lists & Small Queue Screen -->
         <aside class="display-sidebar">
+            
+            <!-- Queue Number Card (Normal mode = small, Call mode = expands to center) -->
+            <div class="call-card-placeholder" style="min-height: 420px; position: relative;">
+                <div class="display-card main-call-card glass-card text-center" id="mainCallCard">
+                    <div class="call-badge"><i class="fa-solid fa-bullhorn"></i> SEDANG DIPANGGIL</div>
+                    
+                    <div class="display-call-box">
+                        <h1 id="call-num" class="display-call-number">A-000</h1>
+                    </div>
+                    
+                    <div class="display-name-box">
+                        <p id="call-name" class="display-call-name">Mempersiapkan...</p>
+                    </div>
+                    
+                    <div class="display-instruction-box">
+                        <span class="loket-title">SILAKAN MENUJU</span>
+                        <h2 class="loket-destination">LOKET UTAMA</h2>
+                    </div>
+                </div>
+            </div>
             
             <!-- Sidebar Card: Upcoming Queues -->
             <div class="display-card sidebar-card glass-card">
