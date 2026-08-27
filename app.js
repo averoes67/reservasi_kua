@@ -326,7 +326,7 @@ function downloadTicket() {
     ctx.fillStyle = '#fef08a';
     ctx.font = 'bold 44px Outfit, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('KUA', innerPad + 10, headerY + 63);
+    ctx.fillText('KUA NANGGUNG', innerPad + 10, headerY + 63);
     
     // Header: Sub-title
     ctx.fillStyle = '#ffffff';
