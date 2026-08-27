@@ -271,27 +271,4 @@ function updateSidebarLists(todayReservations) {
     }
 }
 
-// --- Educational Slider Logic ---
-let currentSlide = 0;
-const slides = document.querySelectorAll('.edu-slide');
-const dots = document.querySelectorAll('.edu-dots .dot');
 
-function showSlide(index) {
-    if (!slides.length) return;
-    
-    slides.forEach((slide, i) => {
-        slide.classList.remove('active');
-        if(dots[i]) dots[i].classList.remove('active');
-    });
-    
-    slides[index].classList.add('active');
-    if(dots[index]) dots[index].classList.add('active');
-}
-
-function nextSlide() {
-    if (!slides.length) return;
-    currentSlide = (currentSlide + 1) % slides.length;
-    showSlide(currentSlide);
-}
-
-setInterval(nextSlide, 10000);

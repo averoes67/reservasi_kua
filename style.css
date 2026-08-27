@@ -1568,7 +1568,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .display-main-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 2rem;
     padding: 2rem 2.5rem;
     align-items: stretch;
@@ -1781,7 +1781,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 @keyframes marqueeAnimation {
-    0% { transform: translate3d(0, 0, 0); }
+    0% { transform: translate3d(100vw, 0, 0); }
     100% { transform: translate3d(-100%, 0, 0); }
 }
 
