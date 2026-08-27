@@ -201,10 +201,25 @@ function speakQueueCall(queueNumber, name) {
 
 function triggerCallNotification(queueNumber, name) {
     const mainCard = document.querySelector('.main-call-card');
+    const callBox = document.querySelector('.display-call-box');
+    
+    // Reset and add pulse alert to main card
     if (mainCard) {
         mainCard.classList.remove('pulse-alert');
         void mainCard.offsetWidth; 
         mainCard.classList.add('pulse-alert');
+    }
+    
+    // Zoom animation for the queue number box
+    if (callBox) {
+        callBox.classList.remove('zoomed-alert');
+        void callBox.offsetWidth;
+        callBox.classList.add('zoomed-alert');
+        
+        // Kembalikan ke ukuran semula setelah 8 detik (durasi suara + jeda)
+        setTimeout(() => {
+            callBox.classList.remove('zoomed-alert');
+        }, 8000);
     }
     
     playChimeTone();
