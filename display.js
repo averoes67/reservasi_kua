@@ -281,8 +281,9 @@ function updateSidebarLists(todayReservations) {
             });
         }
     }
+}
 
-// --- Ad Carousel Logic ---
+// --- Ad Carousel Logic (berjalan mandiri di scope global) ---
 let currentAdSlide = 0;
 const adSlides = document.querySelectorAll('.ad-slide');
 const adDots = document.querySelectorAll('.ad-dots .ad-dot');
@@ -305,7 +306,5 @@ function nextAdSlide() {
     showAdSlide(currentAdSlide);
 }
 
-setInterval(nextAdSlide, 8000); // Ganti iklan setiap 8 detik
-}
-
-
+// Mulai loop carousel setiap 8 detik
+setInterval(nextAdSlide, 8000);
