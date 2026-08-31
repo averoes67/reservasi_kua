@@ -201,6 +201,7 @@ function speakQueueCall(queueNumber, name) {
 
 function triggerCallNotification(queueNumber, name) {
     const mainCard = document.querySelector('.main-call-card');
+    const backdrop = document.getElementById('queueBackdrop');
     
     // Aktifkan mode Panggilan (memindahkan antrean ke tengah membesar)
     if (mainCard) {
@@ -208,9 +209,13 @@ function triggerCallNotification(queueNumber, name) {
         void mainCard.offsetWidth;
         mainCard.classList.add('queue-calling');
         
+        // Tampilkan backdrop gelap
+        if (backdrop) backdrop.classList.add('active');
+        
         // Kembalikan ke mode standby (layar Iklan) setelah 8 detik
         setTimeout(() => {
             mainCard.classList.remove('queue-calling');
+            if (backdrop) backdrop.classList.remove('active');
         }, 8000);
     }
     

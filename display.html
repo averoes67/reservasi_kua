@@ -71,26 +71,27 @@
                 <span class="ad-dot"></span>
             </div>
         </section>
-        <!-- Right Side: Sidebar Lists & Small Queue Screen -->
+    <!-- Backdrop overlay saat mode panggilan -->
+    <div class="queue-calling-backdrop" id="queueBackdrop"></div>
+
+        <!-- Right Side: Sidebar Lists & Queue Screen -->
         <aside class="display-sidebar">
             
-            <!-- Queue Number Card (Normal mode = small, Call mode = expands to center) -->
-            <div class="call-card-placeholder" style="min-height: 420px; position: relative;">
-                <div class="display-card main-call-card glass-card text-center" id="mainCallCard">
-                    <div class="call-badge"><i class="fa-solid fa-bullhorn"></i> SEDANG DIPANGGIL</div>
-                    
-                    <div class="display-call-box">
-                        <h1 id="call-num" class="display-call-number">A-000</h1>
-                    </div>
-                    
-                    <div class="display-name-box">
-                        <p id="call-name" class="display-call-name">Mempersiapkan...</p>
-                    </div>
-                    
-                    <div class="display-instruction-box">
-                        <span class="loket-title">SILAKAN MENUJU</span>
-                        <h2 class="loket-destination">LOKET UTAMA</h2>
-                    </div>
+            <!-- Queue Number Card (compact in sidebar, expands on call) -->
+            <div class="display-card main-call-card glass-card text-center" id="mainCallCard">
+                <div class="call-badge"><i class="fa-solid fa-bullhorn"></i> SEDANG DIPANGGIL</div>
+                
+                <div class="display-call-box">
+                    <h1 id="call-num" class="display-call-number">A-000</h1>
+                </div>
+                
+                <div class="display-name-box">
+                    <p id="call-name" class="display-call-name">Mempersiapkan...</p>
+                </div>
+                
+                <div class="display-instruction-box">
+                    <span class="loket-title">SILAKAN MENUJU</span>
+                    <h2 class="loket-destination">LOKET UTAMA</h2>
                 </div>
             </div>
             

@@ -1569,9 +1569,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     flex: 1;
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-    padding: 2rem 2.5rem;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
     align-items: stretch;
+    overflow: hidden;
 }
 
 .display-card {
@@ -1582,76 +1583,93 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .main-call-card {
-    padding: 2.5rem 2rem;
-    justify-content: space-between;
-    position: absolute; /* Relative to placeholder */
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    padding: 1.5rem 1.25rem;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 5;
-    background: rgba(255, 255, 255, 0.7);
-    transform-origin: center right;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    overflow: hidden;
+}
+
+/* Overlay gelap saat mode panggilan */
+.queue-calling-backdrop {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+.queue-calling-backdrop.active {
+    display: block;
 }
 
 .main-call-card.queue-calling {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 75vw;
-    height: 70vh;
+    width: min(80vw, 900px);
+    height: auto;
+    max-height: 80vh;
     transform: translate(-50%, -50%);
-    z-index: 9999;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
-    border: 4px solid var(--primary);
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    border: 3px solid var(--primary);
+    border-radius: 32px;
+    padding: 3rem 2.5rem;
 }
 
 .main-call-card.queue-calling .display-call-number {
-    font-size: 12rem;
+    font-size: 10rem;
 }
 
 .main-call-card.queue-calling .display-call-name {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
 }
+
+.main-call-card.queue-calling .call-badge {
+    font-size: 1.1rem;
+    padding: 0.6rem 2rem;
+}
+
+.main-call-card.queue-calling .loket-destination {
+    font-size: 2.2rem;
+}
+
+.call-badge {
     background: rgba(22, 163, 74, 0.1);
     color: var(--primary);
     border: 1px solid rgba(22, 163, 74, 0.25);
-    padding: 0.5rem 1.5rem;
+    padding: 0.4rem 1rem;
     border-radius: 30px;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
     font-weight: 700;
     font-family: var(--font-heading);
     letter-spacing: 1px;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    margin: 0 auto 1.5rem auto;
+    margin: 0 auto 1rem auto;
 }
 
 .display-call-box {
     background: linear-gradient(135deg, rgba(22, 163, 74, 0.04), rgba(132, 204, 22, 0.04));
     border: 2px solid rgba(22, 163, 74, 0.12);
-    border-radius: 32px;
-    padding: 2.5rem 1rem;
+    border-radius: 24px;
+    padding: 1.5rem 1rem;
     width: 100%;
-    max-width: 480px;
     margin: 0 auto;
-    box-shadow: 0 12px 30px rgba(22, 163, 74, 0.06);
-    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease;
-}
-
-.display-call-box.zoomed-alert {
-    transform: scale(1.3);
-    box-shadow: 0 25px 60px rgba(22, 163, 74, 0.25);
-    z-index: 10;
-    position: relative;
+    box-shadow: 0 8px 20px rgba(22, 163, 74, 0.06);
 }
 
 .display-call-number {
     font-family: var(--font-heading);
-    font-size: 7.5rem;
+    font-size: 4.5rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -2px;
@@ -1661,32 +1679,36 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .display-name-box {
-    margin: 1.5rem 0;
+    margin: 0.75rem 0;
 }
 
 .display-call-name {
-    font-size: 2.2rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-dark);
     font-family: var(--font-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .display-instruction-box {
-    margin-top: 1.5rem;
+    margin-top: 0.75rem;
 }
 
 .loket-title {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: var(--text-muted);
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .loket-destination {
     font-family: var(--font-heading);
-    font-size: 1.75rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: var(--accent);
 }
@@ -1694,7 +1716,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .display-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .sidebar-card {
@@ -1854,46 +1878,65 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* 19. Responsive Monitor display Adaptations */
 @media (max-width: 1200px) {
     .display-main-grid {
-        grid-template-columns: 1fr 1.5fr;
-        padding: 1.5rem;
+        grid-template-columns: 1.5fr 1fr;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
     }
 
-    .edu-slider-card {
-        display: none !important;
+    .main-call-card.queue-calling {
+        width: min(90vw, 800px);
+    }
+    
+    .main-call-card.queue-calling .display-call-number {
+        font-size: 8rem;
     }
 }
 
 @media (max-width: 992px) {
     .display-main-grid {
         grid-template-columns: 1fr;
-        padding: 1.5rem;
+        padding: 1rem;
+    }
+    
+    .ad-carousel-card {
+        min-height: 300px;
     }
     
     .display-sidebar {
         flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .main-call-card {
+        width: 100%;
     }
     
     .sidebar-card {
         flex: 1;
+        min-width: 200px;
     }
     
     .display-call-number {
+        font-size: 4rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-number {
         font-size: 6rem;
     }
     
-    .display-call-name {
-        font-size: 1.8rem;
+    .main-call-card.queue-calling .display-call-name {
+        font-size: 2rem;
     }
 }
 
 @media (max-width: 768px) {
     .display-header {
-        padding: 1rem 1.5rem;
+        padding: 0.75rem 1rem;
     }
     
     .display-main-grid {
-        padding: 1rem;
-        gap: 1rem;
+        padding: 0.75rem;
+        gap: 0.75rem;
     }
     
     .display-sidebar {
@@ -1901,14 +1944,14 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     }
 
     .main-call-card {
-        padding: 2rem 1.5rem;
+        padding: 1.25rem 1rem;
     }
     
     .display-footer {
-        padding: 1rem 1.5rem;
+        padding: 0.75rem 1rem;
         flex-direction: column;
         align-items: stretch;
-        gap: 0.75rem;
+        gap: 0.5rem;
     }
     
     .marquee-announcement-title {
@@ -1916,10 +1959,23 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     }
 
     .display-call-number {
-        font-size: 5rem;
+        font-size: 3.5rem;
     }
 
     .display-call-name {
+        font-size: 1rem;
+    }
+    
+    .main-call-card.queue-calling {
+        width: 95vw;
+        padding: 2rem 1.5rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-number {
+        font-size: 5rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-name {
         font-size: 1.5rem;
     }
 }
@@ -1927,61 +1983,56 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 @media (max-width: 480px) {
     .display-header {
         flex-direction: column;
-        gap: 0.75rem;
-        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
     }
     
     .display-header-time {
         font-size: 0.85rem;
-        gap: 0.75rem;
-    }
-    
-    .main-call-card {
-        padding: 1.5rem 1rem;
-    }
-    
-    .display-call-box {
-        padding: 1.5rem 1rem;
-        border-radius: 20px;
+        gap: 0.5rem;
     }
     
     .display-call-number {
-        font-size: 3.5rem;
+        font-size: 2.5rem;
     }
     
     .display-call-name {
-        font-size: 1.2rem;
+        font-size: 0.9rem;
     }
     
     .loket-destination {
-        font-size: 1.15rem;
+        font-size: 0.9rem;
     }
 
     .call-badge {
-        font-size: 0.75rem;
-        padding: 0.4rem 1rem;
+        font-size: 0.65rem;
+        padding: 0.3rem 0.75rem;
     }
 
     .sidebar-card-header {
-        font-size: 0.9rem;
-        padding: 1rem 1.25rem;
+        font-size: 0.8rem;
+        padding: 0.75rem 1rem;
     }
 
     .sidebar-list-container {
-        padding: 1rem 1.25rem;
-    }
-
-    .display-footer {
         padding: 0.75rem 1rem;
     }
 
     .marquee-announcement-title {
-        font-size: 0.75rem;
-        padding: 0.5rem 0.8rem;
+        font-size: 0.7rem;
+        padding: 0.4rem 0.7rem;
     }
 
     .display-marquee-text {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-number {
+        font-size: 3.5rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-name {
+        font-size: 1.2rem;
     }
 }
 
