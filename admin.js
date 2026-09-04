@@ -320,3 +320,156 @@ function saveQuota() {
         setTimeout(() => { quotaMsg.textContent = ''; }, 3000);
     }
 }
+
+/* ==========================================================================
+   MONTHLY REPORTS LOGIC
+   ========================================================================== */
+
+function openReportModal() {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+        // Set default month to current month
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        document.getElementById('report-month').value = `${yyyy}-${mm}`;
+        
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeReportModal() {
+    const modal = document.getElementById('report-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+// Function to filter reservations based on the selected month
+function getMonthlyData() {
+    const monthVal = document.getElementById('report-month').value;
+    if (!monthVal) {
+        alert("Pilih bulan terlebih dahulu.");
+        return null;
+    }
+    
+    // monthVal is in 'YYYY-MM' format
+    const filtered = globalReservations.filter(r => r.reserve_date && r.reserve_date.startsWith(monthVal));
+    
+    // Sort chronologically
+    filtered.sort((a, b) => {
+        const dateA = new Date(a.reserve_date);
+        const dateB = new Date(b.reserve_date);
+        if (dateA < dateB) return -1;
+        if (dateA > dateB) return 1;
+        
+        // If same date, sort by ticket number
+        const numA = parseInt(a.ticket_number.split('-')[1] || 0);
+        const numB = parseInt(b.ticket_number.split('-')[1] || 0);
+        return numA - numB;
+    });
+    
+    return { month: monthVal, data: filtered };
+}
+
+function downloadExcelReport() {
+    const report = getMonthlyData();
+    if (!report) return;
+    
+    if (report.data.length === 0) {
+        alert(`Tidak ada data antrean pada bulan ${report.month}.`);
+        return;
+    }
+    
+    // Siapkan data untuk SheetJS
+    const exportData = report.data.map((r, index) => ({
+        "No.": index + 1,
+        "Tanggal": r.reserve_date,
+        "Nomor Antrean": r.ticket_number,
+        "Nama Lengkap": r.full_name,
+        "No. WhatsApp": r.phone_number,
+        "Sesi": r.time_slot,
+        "Layanan": r.purpose,
+        "Status": r.status
+    }));
+    
+    try {
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Rekap Antrean");
+        
+        // Atur lebar kolom (opsional agar rapi)
+        const wscols = [
+            {wch: 5}, {wch: 12}, {wch: 15}, {wch: 30}, {wch: 15}, {wch: 15}, {wch: 25}, {wch: 15}
+        ];
+        worksheet['!cols'] = wscols;
+        
+        XLSX.writeFile(workbook, `Rekap_Antrean_KUA_${report.month}.xlsx`);
+    } catch(e) {
+        console.error(e);
+        alert("Terjadi kesalahan saat membuat file Excel. Pastikan library SheetJS termuat.");
+    }
+}
+
+function downloadWordReport() {
+    const report = getMonthlyData();
+    if (!report) return;
+    
+    if (report.data.length === 0) {
+        alert(`Tidak ada data antrean pada bulan ${report.month}.`);
+        return;
+    }
+    
+    // Buat HTML Table untuk dikonversi menjadi Word Doc
+    let tableHtml = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Laporan Bulanan</title>
+        <style>
+            table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }
+            th, td { border: 1px solid black; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            h2 { text-align: center; font-family: Arial, sans-serif; }
+        </style>
+        </head><body>
+        <h2>Rekapitulasi Pendaftaran Antrean KUA Nanggung</h2>
+        <p><strong>Bulan:</strong> ${report.month}</p>
+        <table>
+            <tr>
+                <th>No.</th>
+                <th>Tanggal</th>
+                <th>No. Antrean</th>
+                <th>Nama Lengkap</th>
+                <th>No. WhatsApp</th>
+                <th>Layanan</th>
+                <th>Status</th>
+            </tr>
+    `;
+    
+    report.data.forEach((r, index) => {
+        tableHtml += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${r.reserve_date}</td>
+                <td>${r.ticket_number}</td>
+                <td>${r.full_name}</td>
+                <td>${r.phone_number}</td>
+                <td>${r.purpose}</td>
+                <td>${r.status}</td>
+            </tr>
+        `;
+    });
+    
+    tableHtml += `</table></body></html>`;
+    
+    // Buat Blob Mime type msword dan trigger unduhan
+    const blob = new Blob(['\ufeff', tableHtml], {
+        type: 'application/msword'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Rekap_Antrean_KUA_${report.month}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}

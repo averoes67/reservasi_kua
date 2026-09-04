@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom Style Sheet -->
     <link rel="stylesheet" href="style.css">
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <!-- Background Floating Glow Blobs -->
@@ -132,7 +134,10 @@
                     <h2>PENGATURAN DATA RESERVASI</h2>
                     <p class="panel-desc">Gunakan menu di bawah ini untuk mengelola data reservasi antrean.</p>
                     
-                    <div class="control-buttons">
+                    <div class="control-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="openReportModal()">
+                            <i class="fa-solid fa-file-excel"></i> Laporan Bulanan
+                        </button>
                         <button class="btn btn-danger" onclick="clearAllData()">
                             <i class="fa-solid fa-trash-can"></i> Hapus Semua Data Antrean
                         </button>
@@ -186,6 +191,31 @@
                 </div>
             </div>
         </section>
+
+        <!-- REPORT MODAL -->
+        <div id="report-modal" class="modal-overlay hidden">
+            <div class="modal-card glass-card">
+                <div class="modal-header">
+                    <h2><i class="fa-solid fa-chart-bar"></i> Laporan Rekapitulasi Bulanan</h2>
+                    <button class="btn-close" onclick="closeReportModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p>Pilih bulan dan tahun untuk menghasilkan rekap data pendaftaran antrean.</p>
+                    <div class="form-group" style="display: flex; gap: 10px; margin-top: 15px;">
+                        <input type="month" id="report-month" class="form-control" style="flex: 1; padding: 0.8rem; border-radius: 8px;">
+                    </div>
+                    
+                    <div class="report-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-success" onclick="downloadExcelReport()" style="flex: 1;">
+                            <i class="fa-solid fa-file-excel"></i> Unduh Excel
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadWordReport()" style="flex: 1; background: #2563eb;">
+                            <i class="fa-solid fa-file-word"></i> Unduh Word
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </main>
 
