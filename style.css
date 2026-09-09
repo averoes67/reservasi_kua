@@ -1514,7 +1514,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     background-color: var(--bg-dark);
     color: var(--text-main);
     font-family: var(--font-body);
-    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -2033,6 +2034,393 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
     
     .main-call-card.queue-calling .display-call-name {
         font-size: 1.2rem;
+    }
+}
+
+/* ==========================================================================
+   LARGE SCREEN ADAPTATIONS (Monitor / TV 24"–32"+)
+   ========================================================================== */
+
+/* --- Monitor Display Page: 1440px+ (Laptop besar / Monitor 24") --- */
+@media (min-width: 1440px) {
+    .display-header {
+        padding: 1.5rem 3rem;
+    }
+    
+    .display-header-time {
+        font-size: 1.3rem;
+        gap: 1.5rem;
+    }
+    
+    .display-main-grid {
+        padding: 2rem 3rem;
+        gap: 2rem;
+    }
+    
+    .display-call-number {
+        font-size: 5.5rem;
+    }
+    
+    .display-call-name {
+        font-size: 1.5rem;
+    }
+    
+    .loket-destination {
+        font-size: 1.4rem;
+    }
+    
+    .call-badge {
+        font-size: 0.95rem;
+        padding: 0.5rem 1.25rem;
+    }
+    
+    .sidebar-card-header {
+        font-size: 1.25rem;
+        padding: 1.5rem 2rem;
+    }
+    
+    .sidebar-list-item {
+        padding: 1rem 1.5rem;
+    }
+    
+    .sidebar-item-num {
+        font-size: 1.4rem;
+    }
+    
+    .sidebar-item-name {
+        font-size: 1.1rem;
+    }
+    
+    .display-footer {
+        padding: 1.5rem 3rem;
+    }
+    
+    .marquee-announcement-title {
+        font-size: 1rem;
+        padding: 0.7rem 1.5rem;
+    }
+    
+    .display-marquee-text {
+        font-size: 1.2rem;
+    }
+}
+
+/* --- Monitor Display Page: 1920px+ (Full HD Monitor / TV 27-32") --- */
+@media (min-width: 1920px) {
+    .display-header {
+        padding: 1.75rem 4rem;
+    }
+    
+    .display-header-logo .logo-text {
+        font-size: 2rem;
+    }
+    
+    .display-header-logo .logo-icon {
+        height: 56px !important;
+    }
+    
+    .display-header-time {
+        font-size: 1.6rem;
+        gap: 2rem;
+    }
+    
+    .display-main-grid {
+        padding: 2.5rem 4rem;
+        gap: 2.5rem;
+    }
+    
+    .display-card {
+        border-radius: 32px;
+    }
+    
+    .main-call-card {
+        padding: 2.5rem 2rem;
+    }
+    
+    .display-call-box {
+        padding: 2.5rem 2rem;
+        border-radius: 28px;
+    }
+    
+    .display-call-number {
+        font-size: 7rem;
+    }
+    
+    .display-call-name {
+        font-size: 2rem;
+    }
+    
+    .display-name-box {
+        margin: 1.25rem 0;
+    }
+    
+    .loket-title {
+        font-size: 0.95rem;
+        letter-spacing: 3px;
+    }
+    
+    .loket-destination {
+        font-size: 1.8rem;
+    }
+    
+    .call-badge {
+        font-size: 1.1rem;
+        padding: 0.6rem 1.5rem;
+        gap: 0.75rem;
+    }
+    
+    .sidebar-card-header {
+        font-size: 1.4rem;
+        padding: 1.75rem 2.5rem;
+        gap: 1rem;
+    }
+    
+    .sidebar-list-container {
+        padding: 2rem 2.5rem;
+    }
+    
+    .sidebar-list {
+        gap: 1.25rem;
+    }
+    
+    .sidebar-list-item {
+        padding: 1.25rem 1.75rem;
+        border-radius: 16px;
+    }
+    
+    .sidebar-item-num {
+        font-size: 1.7rem;
+    }
+    
+    .sidebar-item-name {
+        font-size: 1.3rem;
+    }
+    
+    .display-footer {
+        padding: 1.75rem 4rem;
+        gap: 2.5rem;
+    }
+    
+    .marquee-announcement-title {
+        font-size: 1.15rem;
+        padding: 0.8rem 1.75rem;
+        border-radius: 12px;
+    }
+    
+    .display-marquee-text {
+        font-size: 1.4rem;
+    }
+    
+    .main-call-card.queue-calling {
+        padding: 4rem 3.5rem;
+        border-radius: 40px;
+        border-width: 4px;
+    }
+    
+    .main-call-card.queue-calling .display-call-number {
+        font-size: 14rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-name {
+        font-size: 3.5rem;
+    }
+    
+    .main-call-card.queue-calling .call-badge {
+        font-size: 1.4rem;
+        padding: 0.75rem 2.5rem;
+    }
+    
+    .main-call-card.queue-calling .loket-destination {
+        font-size: 3rem;
+    }
+    
+    .ad-dots {
+        bottom: 2rem;
+        right: 3rem;
+        gap: 1rem;
+    }
+    
+    .ad-dots .ad-dot {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* --- Monitor Display Page: 2560px+ (QHD / TV 32"+) --- */
+@media (min-width: 2560px) {
+    .display-header {
+        padding: 2rem 5rem;
+    }
+    
+    .display-header-logo .logo-text {
+        font-size: 2.5rem;
+    }
+    
+    .display-header-logo .logo-icon {
+        height: 72px !important;
+    }
+    
+    .display-header-time {
+        font-size: 2rem;
+    }
+    
+    .display-main-grid {
+        padding: 3rem 5rem;
+        gap: 3rem;
+    }
+    
+    .display-call-number {
+        font-size: 9rem;
+    }
+    
+    .display-call-name {
+        font-size: 2.5rem;
+    }
+    
+    .sidebar-card-header {
+        font-size: 1.8rem;
+        padding: 2rem 3rem;
+    }
+    
+    .sidebar-item-num {
+        font-size: 2rem;
+    }
+    
+    .sidebar-item-name {
+        font-size: 1.6rem;
+    }
+    
+    .sidebar-list-item {
+        padding: 1.5rem 2rem;
+        border-radius: 20px;
+    }
+    
+    .display-footer {
+        padding: 2rem 5rem;
+    }
+    
+    .marquee-announcement-title {
+        font-size: 1.4rem;
+    }
+    
+    .display-marquee-text {
+        font-size: 1.8rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-number {
+        font-size: 18rem;
+    }
+    
+    .main-call-card.queue-calling .display-call-name {
+        font-size: 4.5rem;
+    }
+}
+
+/* --- Index/Admin Pages: Large Screen Adaptations --- */
+@media (min-width: 1440px) {
+    .main-content {
+        padding: 4rem 3rem;
+    }
+    
+    .section-header h1 {
+        font-size: 3rem;
+    }
+    
+    .section-header p {
+        font-size: 1.25rem;
+    }
+    
+    .card {
+        padding: 3rem;
+    }
+    
+    .stats-row {
+        gap: 2rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 1.1rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 1920px) {
+    .main-content {
+        max-width: 1600px;
+        padding: 5rem 4rem;
+    }
+    
+    #section-admin.page-section {
+        max-width: 1400px;
+    }
+    
+    .section-header h1 {
+        font-size: 3.5rem;
+    }
+    
+    .section-header p {
+        font-size: 1.4rem;
+    }
+    
+    .card {
+        padding: 3.5rem;
+        border-radius: 28px;
+    }
+    
+    .form-group label {
+        font-size: 1.1rem;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 1.1rem;
+        padding: 1.1rem 1.5rem;
+    }
+    
+    .btn {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+    }
+    
+    .stats-row {
+        gap: 2.5rem;
+    }
+    
+    .stat-card {
+        padding: 2rem 2.5rem;
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+    }
+    
+    .stat-info h3 {
+        font-size: 1.1rem;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 1.25rem 1.75rem;
+        font-size: 1.1rem;
+    }
+    
+    .navbar {
+        padding: 1rem 3rem;
+    }
+    
+    .logo-text {
+        font-size: 1.8rem;
+    }
+    
+    .nav-btn {
+        font-size: 1.1rem;
+        padding: 0.75rem 1.5rem;
     }
 }
 
