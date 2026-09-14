@@ -1428,20 +1428,25 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* 17. Ultra-Mobile (iPhone SE/Small Screens) & Stepper Layout Responsiveness */
 @media (max-width: 480px) {
     .nav-container {
-        padding: 0.75rem 1rem;
-        flex-direction: column;
-        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .logo-text {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
+    }
+    
+    .logo-icon {
+        height: 28px !important;
     }
     
     .nav-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-        width: 100%;
-        justify-content: center;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+        width: auto;
     }
 
     .stepper {
